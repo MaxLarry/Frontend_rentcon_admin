@@ -1,0 +1,97 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  height: 100%;
+}
+
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background-color: #fdf6f6; Background color for the body to match your container */
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 1; /* Lower opacity for a softer look */
+  filter: blur(10rem);
+}
+
+.circle-1 {
+  width: 50rem;
+  height: 50rem;
+  background-color: #f03d7c5c; /* Color 1 */
+  top: 0;
+  left: 0;
+  animation: moveCircle1 15s ease-in-out infinite;
+  animation-delay: 20ms;
+}
+
+.circle-2 {
+  width: 50rem;
+  height: 50rem;
+  background-color: #4da2f65c; /* Color 2 */
+  bottom: 0;
+  right:0;
+  animation: moveCircle2 15s ease-in-out infinite;
+}
+
+@keyframes moveCircle1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  25% {
+    transform: translate(400px, 360px) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(-300px, 260px) scale(1) rotate(0deg);
+  }
+  75% {
+    transform: translate(-230px, -160px) scale(1) rotate(0deg);
+  }
+
+}
+
+@keyframes moveCircle2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+  }
+  25% {
+    transform: translate(-400px, -360px) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate(300px, -260px) scale(1) rotate(0deg);
+  }
+  75% {
+    transform: translate(230px, 160px) scale(1) rotate(0deg);
+  }
+
+}
+.lg-card{
+    background-color: #ffffffa8;
+    
+}
+.lg-background {
+    background-image: url('assets/img/texture-dark.jpg');
+    background-size: cover;
+    background-position: center;
+  }
+
+.log-img{
+  background-image: url('assets/img/rent.png');
+  background-size: cover;
+  background-position: center;
+}
