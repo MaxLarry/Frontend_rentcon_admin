@@ -24,20 +24,22 @@ ChartJS.register(
 );
 
 function PropertyListedGraph() {
-  const [timeRange, setTimeRange] = useState("30d"); // Default time range
   const dropdownRef = useRef(null); // Ref for dropdown container
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState("30d"); // Default selected option
 
   // Sample data for the chart based on selected time range
   const data = {
     labels: ["January", "February", "March", "April", "May", "June"], // Modify labels based on timeRange if necessary
     datasets: [
       {
-        label: "Monthly Sales",
+        label: "Listed Properties",
         data: [30, 50, 40, 60, 70, 90], // Adjust data points for the chart
         fill: false,
         borderColor: "rgba(75, 192, 192, 1)",
         backgroundColor: "rgba(75, 192, 192, 0.2)",
         tension: 0.4,
+        borderWidth: 2,
       },
     ],
   };
@@ -62,11 +64,18 @@ function PropertyListedGraph() {
       line: {
         cubicInterpolationMode: "monotone",
       },
+      point: {
+        radius: 0,
+        hoverRadius: 5,
+        hitRadius: 40,
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
     },
   };
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("30d"); // Default selected option
 
   // Available options
   const opt = [

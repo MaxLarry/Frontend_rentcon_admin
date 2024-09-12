@@ -10,9 +10,10 @@ import {
   Title,
   Tooltip,
   Legend,
+  Filler, // Import Filler for area charts
 } from "chart.js";
 
-// Register the scales and elements for the chart
+// Register the necessary components, including Filler
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -20,54 +21,50 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 );
 
-// Custom plugin for drawing the vertical line on hover
-const verticalLinePlugin = {
-  id: 'verticalLinePlugin',
-  beforeDraw: (chart) => {
-    const { ctx, tooltip, chartArea } = chart;
-    if (tooltip._active && tooltip._active.length) {
-      const activePoint = tooltip._active[0];
-      const x = activePoint.element.x;
-      const topY = chartArea.top;
-      const bottomY = chartArea.bottom;
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(x, topY);
-      ctx.lineTo(x, bottomY);
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.stroke();
-      ctx.restore();
-    }
-  },
-};
-
-function GraphV() {
-  const dropdownRef = useRef(null);
+function PARdataGraph() {
+  const dropdownRef = useRef(null); // Ref for dropdown container
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("30d");
+  const [selectedValue, setSelectedValue] = useState("30d"); // Default selected option
 
   // Sample data for the chart based on selected time range
   const data = {
-    labels: ["January", "February", "March", "April", "May", "June"],
+    labels: ["January", "February", "March", "April", "May", "June"], // Modify labels based on timeRange if necessary
     datasets: [
       {
-        label: "Request",
-        data: [30, 90, 40, 60, 70, 90],
-        fill: false,
-        borderColor: "rgba(75, 192, 192, 1)",
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
+        label: "Pending",
+        data: [30, 20, 10, 15, 12, 98], // Example data for Pending
+        borderColor: "rgba(54, 162, 235, 1)", // Blue
+        backgroundColor: "rgba(54, 162, 235, 0.5)", // Semi-transparent blue for area
+        fill: true,
+        tension: 0.4,
+        borderWidth: 2,
+      },
+      {
+        label: "Approved",
+        data: [20, 25, 30, 35, 90, 45], // Example data for Approved
+        borderColor: "rgba(75, 192, 192, 1)", // Green
+        backgroundColor: "rgba(75, 192, 192, 0.5)", // Semi-transparent green for area
+        fill: true,
+        tension: 0.4,
+        borderWidth: 2,
+      },
+      {
+        label: "Rejected",
+        data: [10, 15, 70, 10, 38, 5], // Example data for Rejected
+        borderColor: "rgba(255, 99, 132, 1)", // Red
+        backgroundColor: "rgba(255, 99, 132, 0.5)", // Semi-transparent red for area
+        fill: true,
         tension: 0.4,
         borderWidth: 2,
       },
     ],
   };
 
-  // Chart options with the added plugin
+  // Chart options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -86,27 +83,24 @@ function GraphV() {
     elements: {
       line: {
         cubicInterpolationMode: "monotone",
-        
       },
       point: {
-        radius: 0,
+        radius: 0, // No point by default
         hoverRadius: 5,
-        hitRadius: 40,
+        hitRadius: 20, // Point size on hover
       },
     },
     plugins: {
-      legend: {
-        display: false,
+        legend: {
+          labels: {
+            usePointStyle: true, // Use circular point style for the legend
+            pointStyle: "circle", // Set the point style to circle
+          },
+        },
       },
-      tooltip: {
-        mode: 'index',
-        intersect: false,
-      },
-      verticalLinePlugin, // Include the custom plugin
-    },
   };
 
-  // Available time range options
+  // Available options
   const opt = [
     { value: "24h", label: "24h" },
     { value: "30d", label: "30d" },
@@ -115,40 +109,48 @@ function GraphV() {
     { value: "all", label: "All time" },
   ];
 
+  // Handle option click
   const handleOptionClick = (value) => {
     setSelectedValue(value);
-    setIsOpen(false);
+    setIsOpen(false); // Close dropdown after selecting
   };
 
+  // Detect clicks outside the dropdown and close it
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     };
+
+    // Add event listener to detect clicks
     document.addEventListener("mousedown", handleClickOutside);
+
+    // Cleanup event listener on unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [dropdownRef]);
 
   return (
-    <div className="bg-white border border-gray-200 px-10 py-5 rounded-md shadow-md block items-center lg:col-start-4 lg:col-end-7 lg:row-start-1 lg:row-end-3 md:col-start-1 md:col-end-3 relative">
-      <div className="flex justify-between">
-        <div>
-          <div className="text-lg font-bold text-zinc-900">1230</div>
-          <span className="text-md font-normal text-gray-500">
-            Listing Requests
-          </span>
-        </div>
+    <div className="bg-white border border-gray-200 px-10 py-5 rounded-md shadow-md h-full block items-center lg:col-start-4 lg:col-end-7 lg:row-start-4 lg:row-end-6 md:col-start-1 md:col-end-3 relative">
+      {/* Ensure relative positioning on the parent container */}
+      <div className="flex justify-between mb-9">
+        <span className="text-lg font-bold text-zinc-900">
+          Property Listing Status Overview
+        </span>
+
+        {/* Dropdown button and menu */}
         <div className="relative inline-block" ref={dropdownRef}>
           <button
-            className="text-sm text-gray-700 dark:text-gray-200 py-2 px-4 cursor-pointer flex justify-between items-center"
+            className=" text-sm text-gray-700 dark:text-gray-200 py-2 px-4 cursor-pointer flex justify-between items-center"
             onClick={() => setIsOpen(!isOpen)}
           >
             {opt.find((opt) => opt.value === selectedValue)?.label}
             <IoIosArrowDown className="ml-1" />
           </button>
+
+          {/* Dropdown menu */}
           {isOpen && (
             <div className="absolute mt-2 w-40 bg-white border border-gray-200 dark:bg-gray-800 shadow-lg rounded-lg z-10 right-0">
               {opt.map((opt) => (
@@ -164,8 +166,10 @@ function GraphV() {
           )}
         </div>
       </div>
+
+      {/* Chart container */}
       <div className="flex mt-4">
-        <div className="h-auto w-full">
+        <div className="h-full w-full">
           <Line className="w-fit" data={data} options={options} />
         </div>
       </div>
@@ -173,4 +177,4 @@ function GraphV() {
   );
 }
 
-export default GraphV;
+export default PARdataGraph;
