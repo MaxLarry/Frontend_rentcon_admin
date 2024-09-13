@@ -58,6 +58,9 @@ function PropertyListedGraph() {
         grid: {
           color: "#e5e7eb",
         },
+        border: {
+          display: false, // Remove the y-axis border line
+        },
       },
     },
     elements: {
@@ -110,12 +113,12 @@ function PropertyListedGraph() {
   }, [dropdownRef]);
 
   return (
-    <div className="bg-white border border-gray-200 px-10 py-5 rounded-md shadow-md block items-center lg:col-start-4 lg:col-end-7  md:col-start-1 md:col-end-3 relative">
+    <div className="bg-white border border-gray-200 dark:bg-zinc-800 dark:border-zinc-700 px-10 py-5 rounded-md shadow-md block items-center lg:col-start-4 lg:col-end-7  md:col-start-1 md:col-end-3 relative">
       {/* Ensure relative positioning on the parent container */}
       <div className="flex justify-between">
         <div>
-          <div className="text-lg font-bold text-zinc-900">1230</div>
-          <span className="text-md font-normal text-gray-500">
+          <div className="text-lg font-bold text-zinc-900 dark:text-white">1230</div>
+          <span className="text-md font-normal text-gray-500 dark:text-gray-200">
             Listed Properties
           </span>
         </div>
@@ -132,11 +135,11 @@ function PropertyListedGraph() {
 
           {/* Dropdown menu */}
           {isOpen && (
-            <div className="absolute mt-2 w-40 bg-white border border-gray-200 dark:bg-gray-800 shadow-lg rounded-lg z-10 right-0">
+            <div className="absolute mt-2 p-2 w-40 bg-white border border-gray-200 dark:border-zinc-700 dark:bg-zinc-900 shadow-lg rounded-lg z-10 right-0">
               {opt.map((opt) => (
                 <div
                   key={opt.value}
-                  className="py-2 px-4 text-sm hover:bg-gray-100 cursor-pointer"
+                  className="py-2 px-4 text-sm dark:text-gray-200 rounded-md hover:bg-zinc-800 cursor-pointer"
                   onClick={() => handleOptionClick(opt.value)}
                 >
                   {opt.label}

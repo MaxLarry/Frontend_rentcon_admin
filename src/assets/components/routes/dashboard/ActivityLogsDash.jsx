@@ -21,14 +21,14 @@ function ActivityLog() {
   const currentLogs = logs.slice(indexOfFirstLog, indexOfLastLog);
 
   return (
-    <div className="bg-white border border-gray-200 text-zinc-900 p-4 rounded-md shadow-md col-start-1 lg:col-end-7 md:col-end-3">
-      <h2 className="text-lg font-bold mb-2">Activity Logs</h2>
+    <div className="bg-white border border-gray-200 dark:bg-zinc-800 dark:border-zinc-700 p-4 rounded-md shadow-md col-start-1 lg:col-end-7 md:col-end-3">
+      <h2 className="text-lg font-bold mb-2 text-zinc-900  dark:text-white">Activity Logs</h2>
       <div className="overflow-auto rounded-md py-3">
         <table className="min-w-full bg-white text-center text-sm">
-          <thead className="bg-gray-200">
-            <tr className="border-b">
+          <thead className="bg-gray-200 dark:bg-zinc-700">
+            <tr className="border-b dark:border-zinc-600">
               {req_column.map((column) => (
-                <th key={column} className="px-6 py-2 text-gray-700 font-bold">
+                <th key={column} className="px-6 py-2 text-gray-700 dark:text-gray-200 font-bold">
                   {column}
                 </th>
               ))}
@@ -36,7 +36,7 @@ function ActivityLog() {
           </thead>
           <tbody>
             {currentLogs.map((log) => (
-              <tr key={log.id} className="border-b">
+              <tr key={log.id} className="border-b dark:text-gray-200 dark:bg-zinc-800 dark:border-zinc-700">
                 <td className="py-2 px-4">{truncateId(log.id)}</td>
                 <td className="py-2 px-4">{log.adminName}</td>
                 <td className="py-2 px-4">{log.action}</td>
