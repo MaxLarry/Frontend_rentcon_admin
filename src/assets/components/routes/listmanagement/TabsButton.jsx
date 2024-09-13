@@ -28,7 +28,7 @@ function TabsButton({ activeTab, setActiveTab }) {
         <button
           key={index}
           onClick={() => handleClick(tab.name)}
-          className={`flex flex-col items-center p-2 rounded-lg px-4 text-gray-700 dark:text-gray-200 relative ${
+          className={`flex flex-col items-center p-2 rounded-lg px-4 dark:text-gray-200 relative ${
             activeTab === tab.name
               ? "text-blue-700"
               : "text-gray-500 hover:text-blue-500"

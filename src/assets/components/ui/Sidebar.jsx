@@ -14,19 +14,19 @@ const Sidebar = ({ isSidebarOpen, darkMode, toggleDarkMode }) => {
       case "/dashboard":
         setActiveLink("Dashboard");
         break;
-      case "/listing_management":
+      case "/listing-management":
         setActiveLink("Listing Management");
         break;
-      case "/user_management":
+      case "/user-management":
         setActiveLink("User Management");
         break;
-      case "/compliance_safety":
+      case "/compliance-safety":
         setActiveLink("Compliance & Safety");
         break;
       case "/inbox":
         setActiveLink("Inbox");
         break;
-      case "/log_activity":
+      case "/activity-logs":
         setActiveLink("Log Activity");
         break;
       default:
