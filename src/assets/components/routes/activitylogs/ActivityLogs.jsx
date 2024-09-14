@@ -108,7 +108,7 @@ function ActivityLogs() {
         <select
           value={selectedRole}
           onChange={handleRoleChange}
-          className="p-2 rounded-md border dark:bg-zinc-700 dark:text-gray-200"
+          className="p-1 rounded-md text-xs dark:bg-zinc-700 dark:text-gray-200 focus:ring-teal-400"
         >
           <option value="All">All Roles</option>
           <option value="Super-Admin">Super-Admin</option>
@@ -118,7 +118,7 @@ function ActivityLogs() {
         <select
           value={selectedAction}
           onChange={handleActionChange}
-          className="p-2 rounded-md border dark:bg-zinc-700 dark:text-gray-200"
+          className="p-1 rounded-md text-xs dark:bg-zinc-700 dark:text-gray-200 focus:ring-teal-400"
         >
           <option value="All">All Actions</option>
           <option value="Added a listing">Added a listing</option>
