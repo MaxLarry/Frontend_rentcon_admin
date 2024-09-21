@@ -13,6 +13,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 function ViewPropertyModal({ selectedRequest, title, closeModal }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -34,24 +42,14 @@ function ViewPropertyModal({ selectedRequest, title, closeModal }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-      {/* Close Button inside the modal */}
-      <button
-        onClick={closeModal}
-        className="absolute top-2 right-9 p-2 bg-gray-700 rounded-full hover:bg-gray-600"
-      >
-        <AiOutlineClose size={24} />
-      </button>
-      <Card className="relative  p-6 rounded-lg w-full max-w-md md:max-w-2xl lg:max-w-4xl shadow-lg ">
-        <CardHeader className="p-5 border-b">
-          <CardTitle>Property Details</CardTitle>
-          <CardDescription>{title}</CardDescription>
-        </CardHeader>
+    <Dialog open={true} onOpenChange={closeModal}>
+      <DialogContent className="max-w-md md:max-w-2xl lg:max-w-4xl absolute p-6 rounded-lg shadow-lg">
+        <DialogHeader>
+          <DialogTitle>Property Details</DialogTitle>
+          <DialogDescription>{title}</DialogDescription>
+        </DialogHeader>
         <ScrollArea>
-          <CardContent
-          className="p-5"
-            style={{ maxHeight: "600px" }}
-          >
+          <div className="p-5" style={{ maxHeight: "600px" }}>
             <div className="text-sm space-y-2">
               <p>
                 <strong>Owner's Name: </strong>
@@ -201,10 +199,10 @@ function ViewPropertyModal({ selectedRequest, title, closeModal }) {
               </div>
             </div>
             <LegalDocuments selectedRequest={selectedRequest} />
-          </CardContent>
+          </div>
         </ScrollArea>
-      </Card>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
