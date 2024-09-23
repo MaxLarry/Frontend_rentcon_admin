@@ -174,8 +174,12 @@ function Pending({ searchQuery }) {
       status.includes(lowerCaseQuery) ||
       createdAt.includes(lowerCaseQuery)
     );
+  })
+  .sort((a, b) => {
+    // Sort by created_at in descending order (new to old)
+    return new Date(b.created_at) - new Date(a.created_at);
   });
-
+  
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredRequests.slice(
@@ -204,7 +208,7 @@ function Pending({ searchQuery }) {
 
           <TableBody>
             {currentItems.length > 0 ? (
-              currentItems.map((request, index) => (
+              currentItems.map((request) => (
                 <TableRow key={request._id}>
                   <TableCell className="px-6 py-2 ">
                     <CopyableText
