@@ -19,7 +19,7 @@ function Dashboard() {
     <>
       <ScrollArea
         className=" px-4 pt-14 sm:ml-60 h-full block gap-2 flex-col lg:flex-row translate-all
-    duration-300  tracking-tighter"
+    duration-300"
       >
         <h1 className="font-bold text-2xl p-4">
           Dashboard
