@@ -10,7 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AddAdminUser } from "./AddAdminUser";
 import OptionEllipsis from "./OptionEllipsis";
-
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -28,36 +37,38 @@ function ListAllAdmin() {
   const [selectedAdmin, setSelectedAdmin] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [copiedId, setCopiedId] = useState(null);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false); // State for dialog
+  const [adminToDelete, setAdminToDelete] = useState(null); // admin to delete state
 
+  const { toast } = useToast();
   const itemsPerPage = 20;
   const admin_column = ["Name", "ID", "Role", "Last Login", "Date added", ""];
 
   const filteredAdmin = listAdmin
-  .filter((admins) => {
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    const adminId = admins._id ? admins._id.toLowerCase() : "";
-    const fullName = admins?.fullName ? admins.fullName.toLowerCase() : "";
-    const createdAt = admins.created_at
-      ? format(new Date(admins.created_at), "yyyy-MM-dd HH:mm").toLowerCase()
-      : "";
+    .filter((admins) => {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      const adminId = admins._id ? admins._id.toLowerCase() : "";
+      const fullName = admins?.fullName ? admins.fullName.toLowerCase() : "";
+      const createdAt = admins.created_at
+        ? format(new Date(admins.created_at), "yyyy-MM-dd HH:mm").toLowerCase()
+        : "";
 
-    const roleMatches =
-      selectedRoles.length === 0 || selectedRoles.includes(admins.role);
+      const roleMatches =
+        selectedRoles.length === 0 || selectedRoles.includes(admins.role);
 
-    return (
-      (adminId.includes(lowerCaseQuery) ||
-        fullName.includes(lowerCaseQuery) ||
-        createdAt.includes(lowerCaseQuery)) &&
-      roleMatches
-    );
-  })
-  .sort((a, b) => {
-    // Sort by created_at in descending order (new to old)
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
+      return (
+        (adminId.includes(lowerCaseQuery) ||
+          fullName.includes(lowerCaseQuery) ||
+          createdAt.includes(lowerCaseQuery)) &&
+        roleMatches
+      );
+    })
+    .sort((a, b) => {
+      // Sort by created_at in descending order (new to old)
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -88,6 +99,59 @@ function ListAllAdmin() {
         ? prevSelected.filter((r) => r !== role)
         : [...prevSelected, role]
     );
+  };
+
+  const handleView = (admin) => {
+    // Handle viewing the admin
+    console.log("Viewing admin", admin);
+  };
+
+  const handleEdit = (admin) => {
+    // Handle editing the admin
+    console.log("Editing admin", admin);
+  };
+
+  // Handle deleting the admin
+  const handleDelete = (adminId) => {
+    setAdminToDelete(adminId); // Set admin to delete
+    setDialogOpen(true); // Open confirmation dialog
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!landlordToDelete) return;
+
+    try {
+      // Send a DELETE request with the selected admin ID
+      const response = await axios.delete("/user/delete-admin", {
+        data: { ids: [landlordToDelete] },
+      });
+
+      // Show success toast with message from backend
+      toast({
+        description: response.data.message, // message from backend
+        variant: "success", // Use a success variant
+      });
+
+      // Update the state to remove the deleted admin
+      setListAdmin((prevAdmin) =>
+        prevAdmin.filter((admin) => admin._id !== adminToDelete)
+      );
+
+      setDialogOpen(false); // Close dialog after deletion
+      setAdminToDelete(null); // Reset admin to delete
+    } catch (error) {
+      console.error("Error deleting admin:", error);
+      toast({
+        description: error.message || "Failed to delete admin.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSuspend = (adminId) => {
+    // Handle suspending the admin
+    console.log("Suspending admin", adminId);
+    // You can make an API request to suspend the admin here
   };
 
   useEffect(() => {
@@ -133,7 +197,7 @@ function ListAllAdmin() {
       <div className="flex flex-wrap gap-4 pb-5">
         <div className="flex space-x-2 text-xl font-bold justify-center items-center">
           <h1>Admin</h1>
-        <h2>{adminCount}</h2>
+          <h2>{adminCount}</h2>
         </div>
         <div className="relative ml-auto">
           <SearchInput
@@ -226,7 +290,12 @@ function ListAllAdmin() {
                       : "N/A"}
                   </TableCell>
                   <TableCell className="w-10 pl-0 text-center">
-                    <OptionEllipsis />
+                    <OptionEllipsis
+                      onView={() => handleView(admins)}
+                      onEdit={() => handleEdit(admins)}
+                      onDelete={() => handleDelete(admins._id)}
+                      onSuspend={() => handleSuspend(admins._id)}
+                    />
                   </TableCell>
                 </TableRow>
               ))
@@ -263,6 +332,24 @@ function ListAllAdmin() {
           </Button>
         </div>
       )}
+      {/* Dialog for delete confirmation */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this admin(s)?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2">
+            <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleConfirmDelete} variant="destructive">
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Toaster />
     </>
   );
 }

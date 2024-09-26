@@ -8,7 +8,16 @@ import { Checkbox } from "@/components/ui/checkbox"; // Import Shadcn checkbox
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import OptionEllipsis from "./OptionEllipsis";
-
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -25,35 +34,52 @@ function ListAllOccupant() {
   const [selectedOccupant, setSelectedOccupant] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [copiedId, setCopiedId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false); // State for dialog
+  const [occupantToDelete, setOccupantToDelete] = useState(null); // occupant to delete state
 
+  const { toast } = useToast();
   const itemsPerPage = 20;
-  const landlord_column = ["Name", "ID", "Status", "Last Active", "Date Register", ""];
+  const landlord_column = [
+    "Name",
+    "ID",
+    "Status",
+    "Last Active",
+    "Date Register",
+    "",
+  ];
 
   const filteredOccupant = listOccupant
-  .filter((occupants) => {
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    const occupantId = occupants._id ? occupants._id.toLowerCase() : "";
-    const fullName = occupants?.fullName ? occupants.fullName.toLowerCase() : "";
-    const createdAt = occupants.created_at
-      ? format(new Date(occupants.created_at), "yyyy-MM-dd HH:mm").toLowerCase()
-      : "";
+    .filter((occupants) => {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      const occupantId = occupants._id ? occupants._id.toLowerCase() : "";
+      const fullName = occupants?.fullName
+        ? occupants.fullName.toLowerCase()
+        : "";
+      const createdAt = occupants.created_at
+        ? format(
+            new Date(occupants.created_at),
+            "yyyy-MM-dd HH:mm"
+          ).toLowerCase()
+        : "";
 
-    return (
-      occupantId.includes(lowerCaseQuery) ||
-      fullName.includes(lowerCaseQuery) ||
-      createdAt.includes(lowerCaseQuery)
-    );
-  })
+      return (
+        occupantId.includes(lowerCaseQuery) ||
+        fullName.includes(lowerCaseQuery) ||
+        createdAt.includes(lowerCaseQuery)
+      );
+    })
     .sort((a, b) => {
-    // Sort by created_at in descending order (new to old)
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
+      // Sort by created_at in descending order (new to old)
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredOccupant.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredOccupant.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
   const totalPages = Math.ceil(filteredOccupant.length / itemsPerPage);
 
   const handleselectedOccupant = (id) => {
@@ -73,6 +99,59 @@ function ListAllOccupant() {
     setSelectAll(!selectAll);
   };
 
+  const handleView = (occupant) => {
+    // Handle viewing the occupant
+    console.log("Viewing occupant", occupant);
+  };
+
+  const handleEdit = (occupant) => {
+    // Handle editing the occupant
+    console.log("Editing occupant", occupant);
+  };
+
+  // Handle deleting the occupant
+  const handleDelete = (occupantId) => {
+    setOccupantToDelete(occupantId); // Set occupant to delete
+    setDialogOpen(true); // Open confirmation dialog
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!occupantToDelete) return;
+
+    try {
+      // Send a DELETE request with the selected occupant ID
+      const response = await axios.delete("/user/delete-occupant", {
+        data: { ids: [occupantToDelete] },
+      });
+
+      // Show success toast with message from backend
+      toast({
+        description: response.data.message, // message from backend
+        variant: "success", // Use a success variant
+      });
+
+      // Update the state to remove the deleted occupant
+      setListOccupant((prevOccupants) =>
+        prevOccupants.filter((occupant) => occupant._id !== occupantToDelete)
+      );
+
+      setDialogOpen(false); // Close dialog after deletion
+      setOccupantToDelete(null); // Reset occupant to delete
+    } catch (error) {
+      console.error("Error deleting occupant:", error);
+      toast({
+        description: error.message || "Failed to delete occupant.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSuspend = (occupantId) => {
+    // Handle suspending the occupant
+    console.log("Suspending occupant", occupantId);
+    // You can make an API request to suspend the occupant here
+  };
+
   useEffect(() => {
     if (selectedOccupant.length !== currentItems.length) {
       setSelectAll(false);
@@ -83,7 +162,6 @@ function ListAllOccupant() {
       setSelectAll(true);
     }
   }, [selectedOccupant, currentItems]);
-
 
   //api fetch all Occupants
   useEffect(() => {
@@ -115,9 +193,9 @@ function ListAllOccupant() {
   return (
     <>
       <div className="flex flex-wrap gap-4 pb-5">
-      <div className="flex space-x-2 text-xl font-bold justify-center items-center">
+        <div className="flex space-x-2 text-xl font-bold justify-center items-center">
           <h1>Occupants</h1>
-        <h2></h2>
+          <h2></h2>
         </div>
         <div className="relative ml-auto">
           <SearchInput
@@ -163,7 +241,9 @@ function ListAllOccupant() {
                   <TableCell>
                     <Checkbox
                       checked={selectedOccupant.includes(occupants._id)}
-                      onCheckedChange={() => handleselectedOccupant(occupants._id)}
+                      onCheckedChange={() =>
+                        handleselectedOccupant(occupants._id)
+                      }
                     />
                   </TableCell>
                   <TableCell>
@@ -176,7 +256,7 @@ function ListAllOccupant() {
                           />
                         ) : (
                           <AvatarFallback>
-                            <FaUserCircle  className="text-9xl"/>
+                            <FaUserCircle className="text-9xl" />
                           </AvatarFallback>
                         )}
                       </Avatar>
@@ -196,16 +276,27 @@ function ListAllOccupant() {
                   <TableCell>{occupants?.Status}</TableCell>
                   <TableCell>
                     {occupants.last_login
-                      ? format(new Date(occupants.last_login), "yyyy-MM-dd HH:mm")
+                      ? format(
+                          new Date(occupants.last_login),
+                          "yyyy-MM-dd HH:mm"
+                        )
                       : "N/A"}
                   </TableCell>
                   <TableCell>
                     {occupants.created_at
-                      ? format(new Date(occupants.created_at), "yyyy-MM-dd HH:mm")
+                      ? format(
+                          new Date(occupants.created_at),
+                          "yyyy-MM-dd HH:mm"
+                        )
                       : "N/A"}
                   </TableCell>
                   <TableCell className="w-10 pl-0 text-center">
-                    <OptionEllipsis />
+                    <OptionEllipsis
+                      onView={() => handleView(occupants)}
+                      onEdit={() => handleEdit(occupants)}
+                      onDelete={() => handleDelete(occupants._id)}
+                      onSuspend={() => handleSuspend(occupants._id)}
+                    />
                   </TableCell>
                 </TableRow>
               ))
@@ -242,6 +333,25 @@ function ListAllOccupant() {
           </Button>
         </div>
       )}
+
+      {/* Dialog for delete confirmation */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Deletion</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this occupant(s)?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2">
+            <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleConfirmDelete} variant="destructive">
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <Toaster/>
     </>
   );
 }
