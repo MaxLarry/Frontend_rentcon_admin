@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
-import CopyableText from "../../ui/CopyableText";
+import CopyableText from "../../../ui/CopyableText";
 import { FaUserCircle } from "react-icons/fa";
 import { SearchInput } from "@/components/ui/input";
 import { DropdownMenuCheckboxes } from "./DropdowMenuCheckbox"; // Fixed typo in import name
@@ -9,7 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox"; // Import Shadcn checkbox
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AddAdminUser } from "./AddAdminUser";
-import OptionEllipsis from "./OptionEllipsis";
+import OptionEllipsis from "../OptionEllipsis";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -28,6 +28,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import ViewAdminModal from "./ViewAdmin";
+import EditAdmin from "./EditAdmin";
 
 function ListAllAdmin() {
   const [listAdmin, setListAdmin] = useState([]); // set all the admins list
@@ -39,9 +41,12 @@ function ListAllAdmin() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRoles, setSelectedRoles] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false); // State for dialog
-  const [adminToDelete, setAdminToDelete] = useState(null); // admin to delete state
-
+  const [dialogOpenv1, setDialogOpenv1] = useState(false); // State for dialog
+  const [adminAction, setAdminAction] = useState({
+    toDelete: null,
+    toView: null,
+    toEdit: null,
+  });
   const { toast } = useToast();
   const itemsPerPage = 20;
   const admin_column = ["Name", "ID", "Role", "Last Login", "Date added", ""];
@@ -101,48 +106,89 @@ function ListAllAdmin() {
     );
   };
 
+  // const handleView = (admin) => {
+  //   // Handle viewing the admin
+  //   console.log("Viewing admin", admin);
+  // };
+
+  // const handleEdit = (admin) => {
+  //   // Handle editing the admin
+  //   console.log("Editing admin", admin);
+  // };
+
+  // // Handle deleting the admin
+  // const handleDelete = (adminId) => {
+  //   setAdminToDelete(adminId); // Set admin to delete
+  //   setDialogOpen(true); // Open confirmation dialog
+  // };
+
   const handleView = (admin) => {
-    // Handle viewing the admin
-    console.log("Viewing admin", admin);
+    setAdminAction((prev) => ({ ...prev, toView: admin })); // Set the selected admin to view
+  };
+
+  const closeModal = () => {
+    setAdminAction({ toDelete: null, toView: null, toEdit: null }); // Clear selected request
   };
 
   const handleEdit = (admin) => {
-    // Handle editing the admin
-    console.log("Editing admin", admin);
+    setAdminAction((prev) => ({ ...prev, toEdit: admin })); // Set the selected admin to edit
   };
 
-  // Handle deleting the admin
   const handleDelete = (adminId) => {
-    setAdminToDelete(adminId); // Set admin to delete
-    setDialogOpen(true); // Open confirmation dialog
+    setAdminAction((prev) => ({ ...prev, toDelete: adminId })); // Set admin to delete
   };
 
   const handleConfirmDelete = async () => {
-    if (!landlordToDelete) return;
+    const { toDelete } = adminAction;
+    if (!toDelete) return;
 
     try {
-      // Send a DELETE request with the selected admin ID
-      const response = await axios.delete("/user/delete-admin", {
-        data: { ids: [landlordToDelete] },
+      const response = await axios.delete("/user/admin-deletion", {
+        data: { userId: toDelete },
       });
 
-      // Show success toast with message from backend
       toast({
-        description: response.data.message, // message from backend
-        variant: "success", // Use a success variant
+        description: response.data.message,
+        variant: "success",
       });
 
-      // Update the state to remove the deleted admin
       setListAdmin((prevAdmin) =>
-        prevAdmin.filter((admin) => admin._id !== adminToDelete)
+        prevAdmin.filter((admin) => admin._id !== toDelete)
       );
 
-      setDialogOpen(false); // Close dialog after deletion
-      setAdminToDelete(null); // Reset admin to delete
+      closeModal(); // Close dialog after deletion
     } catch (error) {
       console.error("Error deleting admin:", error);
       toast({
         description: error.message || "Failed to delete admin.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteSelectedAdmin = async () => {
+    if (selectedAdmin.length === 0) return;
+
+    try {
+      const response = await axios.delete("/user/selected-admin-deletion", {
+        data: { ids: selectedAdmin },
+      });
+
+      toast({
+        description: response.data.message,
+        variant: "success",
+      });
+
+      setListAdmin((prevAdmin) =>
+        prevAdmin.filter((admin) => !selectedAdmin.includes(admin._id))
+      );
+      setSelectedAdmin([]);
+      setSelectAll(false);
+      setDialogOpenv1(false); // Close dialog after deletion
+    } catch (error) {
+      console.error("Error deleting selected admin:", error);
+      toast({
+        description: error.message || "Failed to delete selected admin.",
         variant: "destructive",
       });
     }
@@ -170,7 +216,11 @@ function ListAllAdmin() {
       setLoading(true);
       try {
         const response = await axios.get("/user/admin");
-        setListAdmin(response.data.admins || []);
+        if (response.data.admins && response.data.admins.length > 0) {
+          setListAdmin(response.data.admins);
+        } else {
+          setListAdmin([]);
+        }
         setAdminCount(response.data.count);
       } catch (error) {
         console.error("There was an error fetching the Admin List!", error);
@@ -281,12 +331,15 @@ function ListAllAdmin() {
                   <TableCell>{admins?.role}</TableCell>
                   <TableCell>
                     {admins.last_login
-                      ? format(new Date(admins.last_login), "yyyy-MM-dd HH:mm")
+                      ? format(
+                          new Date(admins.last_login),
+                          "MMMM dd, yyyy hh:mm a"
+                        )
                       : "N/A"}
                   </TableCell>
                   <TableCell>
                     {admins.created_at
-                      ? format(new Date(admins.created_at), "yyyy-MM-dd HH:mm")
+                      ? format(new Date(admins.created_at), "MMMM dd, yyyy")
                       : "N/A"}
                   </TableCell>
                   <TableCell className="w-10 pl-0 text-center">
@@ -332,18 +385,97 @@ function ListAllAdmin() {
           </Button>
         </div>
       )}
+
+      {/* Dialog for select delete confirmation */}
+      {selectedAdmin.length > 0 && (
+        <div className="w-full flex justify-center">
+          <div className="fixed bottom-5 max-w-fit border rounded-lg text-sm shadow-md border-zinc-700 bg-zinc-800 text-white p-4 flex justify-between gap-10 items-center transition-transform transform translate-y-0 animate-slide-up">
+            <div className="flex gap-3">
+              <div className="text-gray-200 bg-teal-400 px-2 rounded-md">
+                {selectedAdmin.length}
+              </div>
+              <p>Admin(s) Selected</p>
+            </div>
+            <div>
+              <button
+                className="px-4 py-2 mr-2 rounded- text-white hover:text-gray-400"
+                onClick={() => setSelectedAdmin([])}
+              >
+                Cancel
+              </button>
+              <Dialog open={dialogOpenv1} onOpenChange={setDialogOpenv1}>
+                <DialogTrigger asChild>
+                  <button
+                    className="px-4 py-2 rounded-md border border-gray-500 hover:border-white"
+                    onClick={() => setDialogOpenv1(true)}
+                  >
+                    Delete
+                  </button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Confirm Deletion</DialogTitle>
+                    <DialogDescription>
+                      Are you sure you want to delete the selected admin(s)?
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex justify-end mt-4">
+                    <button
+                      className="px-4 py-2 mr-2 rounded-md text-gray-600"
+                      onClick={() => setDialogOpenv1(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="px-4 py-2 rounded-md bg-red-500 text-white"
+                      onClick={handleDeleteSelectedAdmin} // Call the delete function
+                    >
+                      Confirm
+                    </button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal for Viewing Landlord */}
+      {adminAction.toView && (
+        <ViewAdminModal
+          adminToView={adminAction.toView}
+          title={`User ID - ${adminAction.toView?._id}`}
+          closeModal={closeModal}
+        />
+      )}
+
+      {/* Modal for Editing Landlord */}
+      {adminAction.toEdit && (
+        <EditAdmin
+          adminToEdit={adminAction.toEdit}
+          title={`User ID - ${adminAction.toEdit?._id}`}
+          closeModal={closeModal}
+        />
+      )}
+
       {/* Dialog for delete confirmation */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <Dialog
+        open={Boolean(adminAction.toDelete)}
+        onOpenChange={(open) => !open && closeModal()}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this admin(s)?
+              Are you sure you want to delete this admin? This action cannot be
+              undone.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2">
-            <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleConfirmDelete} variant="destructive">
+            <Button variant="outline" onClick={closeModal}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>
               Delete
             </Button>
           </div>

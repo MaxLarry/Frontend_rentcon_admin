@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
-import CopyableText from "../../ui/CopyableText";
+import CopyableText from "../../../ui/CopyableText";
 import { FaUserCircle } from "react-icons/fa";
 import { SearchInput } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox"; // Import Shadcn checkbox
+import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import OptionEllipsis from "./OptionEllipsis";
+import OptionEllipsis from "../OptionEllipsis";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -26,18 +26,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import ViewLandlordModal from "./ViewLandlord";
+import EditLandlord from "./EditLandlord";
 
 function ListAllLandlord() {
   const [listLandlord, setListLandlord] = useState([]);
+  const [occupantCount, setOccupantCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedLandlord, setSelectedLandlord] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false); // State for dialog
-  const [dialogOpenv1, setDialogOpenv1] = useState(false); // State for dialog v1
-  const [landlordToDelete, setLandlordToDelete] = useState(null); // Landlord to delete state
+  const [dialogOpenv1, setDialogOpenv1] = useState(false);
+  const [landlordAction, setLandlordAction] = useState({
+    toDelete: null,
+    toView: null,
+    toEdit: null,
+  });
 
   const { toast } = useToast();
   const itemsPerPage = 20;
@@ -70,10 +76,7 @@ function ListAllLandlord() {
         createdAt.includes(lowerCaseQuery)
       );
     })
-    .sort((a, b) => {
-      // Sort by created_at in descending order (new to old)
-      return new Date(b.created_at) - new Date(a.created_at);
-    });
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -101,43 +104,40 @@ function ListAllLandlord() {
   };
 
   const handleView = (landlord) => {
-    // Handle viewing the landlord
-    console.log("Viewing landlord", landlord);
+    setLandlordAction((prev) => ({ ...prev, toView: landlord })); // Set the selected landlord to view
+  };
+
+  const closeModal = () => {
+    setLandlordAction({ toDelete: null, toView: null, toEdit: null }); // Clear selected request
   };
 
   const handleEdit = (landlord) => {
-    // Handle editing the landlord
-    console.log("Editing landlord", landlord);
+    setLandlordAction((prev) => ({ ...prev, toEdit: landlord })); // Set the selected landlord to edit
   };
 
-  // Handle deleting the landlord
   const handleDelete = (landlordId) => {
-    setLandlordToDelete(landlordId); // Set landlord to delete
-    setDialogOpen(true); // Open confirmation dialog
+    setLandlordAction((prev) => ({ ...prev, toDelete: landlordId })); // Set landlord to delete
   };
 
   const handleConfirmDelete = async () => {
-    if (!landlordToDelete) return;
+    const { toDelete } = landlordAction;
+    if (!toDelete) return;
 
     try {
-      // Send a DELETE request with the selected landlord ID
       const response = await axios.delete("/user/landlord-deletion", {
-        data: { userId: landlordToDelete },
+        data: { userId: toDelete },
       });
 
-      // Show success toast with message from backend
       toast({
-        description: response.data.message, // message from backend
-        variant: "success", // Use a success variant
+        description: response.data.message,
+        variant: "success",
       });
 
-      // Update the state to remove the deleted landlord
       setListLandlord((prevLandlords) =>
-        prevLandlords.filter((landlord) => landlord._id !== landlordToDelete)
+        prevLandlords.filter((landlord) => landlord._id !== toDelete)
       );
 
-      setDialogOpen(false); // Close dialog after deletion
-      setLandlordToDelete(null); // Reset landlord to delete
+      closeModal(); // Close dialog after deletion
     } catch (error) {
       console.error("Error deleting landlord:", error);
       toast({
@@ -147,47 +147,35 @@ function ListAllLandlord() {
     }
   };
 
+  const handleDeleteSelectedLandlord = async () => {
+    if (selectedLandlord.length === 0) return;
 
-  const handleSuspend = (landlordId) => {
-    // Handle suspending the landlord
-    console.log("Suspending landlord", landlordId);
-    // You can make an API request to suspend the landlord here
+    try {
+      const response = await axios.delete("/user/selected-landlord-deletion", {
+        data: { ids: selectedLandlord },
+      });
+
+      toast({
+        description: response.data.message,
+        variant: "success",
+      });
+
+      setListLandlord((prevLandlords) =>
+        prevLandlords.filter(
+          (landlord) => !selectedLandlord.includes(landlord._id)
+        )
+      );
+      setSelectedLandlord([]);
+      setSelectAll(false);
+      setDialogOpenv1(false); // Close dialog after deletion
+    } catch (error) {
+      console.error("Error deleting selected Landlord:", error);
+      toast({
+        description: error.message || "Failed to delete selected Landlord.",
+        variant: "destructive",
+      });
+    }
   };
-
-  //handle bulk or selected landlord usergf
-    const handleDeleteSelectedLandlord = async () => {
-      if (selectedLandlord.length === 0) return;
-    
-      try {
-        // Send a DELETE request with the selected property IDs
-        const response = await axios.delete("/user/selected-landlord-deletion", {
-         data: { ids: selectedLandlord },
-        });
-    
-        // Show success toast with message from backend
-        toast({
-          description: response.data.message, // message from backend
-          variant: "success", // Use a success variant
-        });
-    
-        // Update the state to remove the deleted requests
-        setListLandlord((prevLandlords) =>
-          prevLandlords.filter(
-            (landlord) => !selectedLandlord.includes(landlord._id)
-          )
-        );
-        setSelectedLandlord([]);
-        setSelectAll(false);
-        setDialogOpenv1(false); // Close dialog after deletion
-      } catch (error) {
-        console.error("Error deleting selected requests:", error);
-        toast({
-          description: error.message || "Failed to delete selected requests.", // Use the extracted error message
-          variant: "destructive",
-        });
-      }
-    };
-    
 
   useEffect(() => {
     if (selectedLandlord.length !== currentItems.length) {
@@ -200,13 +188,12 @@ function ListAllLandlord() {
     }
   }, [selectedLandlord, currentItems]);
 
-  //api fetch all Landlord
   useEffect(() => {
     const fetchLandlords = async () => {
       setLoading(true);
       try {
         const response = await axios.get("/user/landlord");
-        setListLandlord(response.data || []);
+        setListLandlord(response.data.length > 0 ? response.data : []);
       } catch (error) {
         console.error("There was an error fetching the Landlord List!", error);
         setError("Failed to fetch Landlord List");
@@ -232,12 +219,11 @@ function ListAllLandlord() {
       <div className="flex flex-wrap gap-4 pb-5">
         <div className="flex space-x-2 text-xl font-bold justify-center items-center">
           <h1>Landlords</h1>
-          <h2></h2>
         </div>
         <div className="relative ml-auto">
           <SearchInput
             type="text"
-            placeholder="Search lanlords..."
+            placeholder="Search landlords..."
             className="rounded-md border focus:ring-teal-400 w-auto"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -251,7 +237,7 @@ function ListAllLandlord() {
               <TableHead>
                 <Checkbox
                   checked={selectAll}
-                  onCheckedChange={handleSelectAll} // Handle select all change
+                  onCheckedChange={handleSelectAll}
                 />
               </TableHead>
               {landlord_column.map((column, index) => (
@@ -268,13 +254,7 @@ function ListAllLandlord() {
           <TableBody>
             {currentItems.length > 0 ? (
               currentItems.map((landlords) => (
-                <TableRow
-                  key={landlords._id}
-                  className="cursor-pointer"
-                  data-state={
-                    selectedLandlord.includes(landlords._id) ? "selected" : ""
-                  }
-                >
+                <TableRow key={landlords._id}>
                   <TableCell>
                     <Checkbox
                       checked={selectedLandlord.includes(landlords._id)}
@@ -310,37 +290,41 @@ function ListAllLandlord() {
                       onCopy={() => setCopiedId(landlords._id)}
                     />
                   </TableCell>
-                  <TableCell>{landlords?.Status}</TableCell>
                   <TableCell>
-                    {landlords.last_login
+                    {landlords?.status ? landlords.status : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    {landlords?.last_login
                       ? format(
                           new Date(landlords.last_login),
-                          "yyyy-MM-dd HH:mm"
+                          "MMMM dd, yyyy hh:mm a"
                         )
                       : "N/A"}
                   </TableCell>
                   <TableCell>
-                    {landlords.created_at
+                    {landlords?.created_at
                       ? format(
                           new Date(landlords.created_at),
-                          "yyyy-MM-dd HH:mm"
+                          "MMMM dd, yyyy hh:mm a"
                         )
                       : "N/A"}
                   </TableCell>
-                  <TableCell className="w-10 pl-0 text-center">
+                  <TableCell>
                     <OptionEllipsis
-                      onView={() => handleView(landlords)}
                       onEdit={() => handleEdit(landlords)}
+                      onView={() => handleView(landlords)}
                       onDelete={() => handleDelete(landlords._id)}
-                      onSuspend={() => handleSuspend(landlords._id)}
                     />
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="text-center">
-                  No landlords available.
+                <TableCell
+                  colSpan={landlord_column.length + 1}
+                  className="text-center"
+                >
+                  No Landlords Found
                 </TableCell>
               </TableRow>
             )}
@@ -371,7 +355,8 @@ function ListAllLandlord() {
         </div>
       )}
 
-     {selectedLandlord.length > 0 && (
+      {/* Dialog for select delete confirmation */}
+      {selectedLandlord.length > 0 && (
         <div className="w-full flex justify-center">
           <div className="fixed bottom-5 max-w-fit border rounded-lg text-sm shadow-md border-zinc-700 bg-zinc-800 text-white p-4 flex justify-between gap-10 items-center transition-transform transform translate-y-0 animate-slide-up">
             <div className="flex gap-3">
@@ -383,7 +368,7 @@ function ListAllLandlord() {
             <div>
               <button
                 className="px-4 py-2 mr-2 rounded- text-white hover:text-gray-400"
-                onClick={() => setSelectedRequests([])}
+                onClick={() => setSelectedLandlord([])}
               >
                 Cancel
               </button>
@@ -400,8 +385,7 @@ function ListAllLandlord() {
                   <DialogHeader>
                     <DialogTitle>Confirm Deletion</DialogTitle>
                     <DialogDescription>
-                      Are you sure you want to delete the selected rejected
-                      requests?
+                      Are you sure you want to delete the selected Landlord(s)?
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex justify-end mt-4">
@@ -425,18 +409,42 @@ function ListAllLandlord() {
         </div>
       )}
 
-      {/* Dialog for delete confirmation */}
-      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      {/* Modal for Viewing Landlord */}
+      {landlordAction.toView && (
+        <ViewLandlordModal
+          landlordToView={landlordAction.toView}
+          title={`User ID - ${landlordAction.toView?._id}`}
+          closeModal={closeModal}
+        />
+      )}
+
+      {/* Modal for Editing Landlord */}
+      {landlordAction.toEdit && (
+        <EditLandlord
+          landlordToEdit={landlordAction.toEdit}
+          title={`User ID - ${landlordAction.toEdit?._id}`}
+          closeModal={closeModal}
+        />
+      )}
+
+      {/* Confirmation Dialog for Deleting Landlord */}
+      <Dialog
+        open={Boolean(landlordAction.toDelete)}
+        onOpenChange={(open) => !open && closeModal()}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Deletion</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this landlord(s)?
+              Are you sure you want to delete this landlord? This action cannot
+              be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end space-x-2">
-            <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-            <Button onClick={handleConfirmDelete} variant="destructive">
+            <Button variant="outline" onClick={closeModal}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleConfirmDelete}>
               Delete
             </Button>
           </div>
