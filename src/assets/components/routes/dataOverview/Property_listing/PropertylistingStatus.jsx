@@ -98,7 +98,7 @@ function PropertylistingStatus() {
     <Card className="rounded-md shadow-md block items-center col-start-4 md:col-end-3 lg:col-end-10 noselect">
       <CardHeader className="flex flex-row justify-between pb-6">
         <div>
-        <CardTitle>Property Listing Status</CardTitle>
+        <CardTitle className="text-xl font-bold">Property Listing Status</CardTitle>
         <CardDescription className="mt-2">
             Showing user registrations over {selectedValue}
           </CardDescription>
