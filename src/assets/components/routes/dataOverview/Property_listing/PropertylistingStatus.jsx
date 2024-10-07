@@ -100,7 +100,7 @@ function PropertylistingStatus() {
         <div>
         <CardTitle className="text-xl font-bold">Property Listing Status</CardTitle>
         <CardDescription className="mt-2">
-            Showing user registrations over {selectedValue}
+            Showing Listing status over {selectedValue}
           </CardDescription>
         </div>
         <div>

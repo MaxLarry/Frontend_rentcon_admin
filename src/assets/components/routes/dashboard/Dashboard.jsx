@@ -7,7 +7,7 @@ import { FiUsers } from "react-icons/fi";
 import GraphV from "./GraphV";
 import PropertyListedGraph from "./PropertyListedGraph";
 import PendingRequestdash from "./PendingRequestdash";
-import PARdataGraph from "./PARdataGraph";
+import PropertylistingStatus from "./PARdataGraph";
 import ActivityLogs from "./ActivityLogsDash";
 import MostVisited from "./MostVisited";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,7 +29,7 @@ function Dashboard() {
           <PendingRequestdash />
           <GraphV />
           <MostVisited />
-          <PARdataGraph />
+          <PropertylistingStatus />
           <ActivityLogs />
         </div>
       </ScrollArea>
