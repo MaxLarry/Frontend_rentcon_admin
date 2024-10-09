@@ -45,6 +45,10 @@ body {
   overflow: hidden;
 }
 
+input:disabled {
+  cursor: default;
+}
+
 .noselect {
   user-select: none;
 }

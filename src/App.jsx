@@ -9,6 +9,7 @@ import DataOverview from './assets/components/routes/dataOverview/DataOverview';
 import withAuth from './assets/components/auth/withAuth';
 import PublicRoute from './assets/components/auth/publicRoute';
 import Layout from './assets/components/ui/Layout'; // New Layout Component
+import Settings from './assets/components/routes/Setting_nav/Setting'; 
 import axios from 'axios';
 
 axios.defaults.baseURL = 'http://localhost:5000';
@@ -41,6 +42,7 @@ function App() {
   const ProtectedInbox = withAuth(ActivityLogs);
   const ProtectedDataOverview = withAuth(DataOverview);
   const ProtectedSafetyCompliance = withAuth(ActivityLogs);
+  const ProtectedSettings = withAuth(Settings);
 
   return (
     <Router>
@@ -58,6 +60,7 @@ function App() {
           <Route path="/data-overview" element={<ProtectedDataOverview />} />
           <Route path="/inbox" element={<ProtectedInbox />} />
         </Route>
+        <Route path="/settings" element={<ProtectedSettings/>} />
       </Routes>
     </Router>
   );

@@ -3,6 +3,7 @@ import axios from "axios";
 import CopyableText from "../../ui/CopyableText";
 import { Button } from "@/components/ui/button";
 import { parse, isAfter, isBefore, format } from "date-fns";
+import useAuth from "../../auth/useAuth";
 import {
   Card,
   CardContent,
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/table";
 
 function ActivityLog() {
+  const { user } = useAuth();
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
