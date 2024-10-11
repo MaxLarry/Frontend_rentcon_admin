@@ -4,14 +4,12 @@ import { useNavigate,useLocation } from "react-router-dom"; // Import useNavigat
 import { Skeleton } from "@/components/ui/skeleton";
 import { CardContent } from "@/components/ui/card";
 import SettingTabs from "./SettingTabs";
-import useAuth from "../../auth/useAuth";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import MyProfile from "./tabs/MyProfile"
 //import AccountSetting from "./tabs/AccountSetting"
 
 const Settings = () => {
-  const { user, logout } = useAuth();
   const [selectedTab, setSelectedTab] = useState("profile");
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,7 +32,7 @@ const Settings = () => {
   const renderContent = () => {
     switch (activeTab) {
       case "My Profile":
-        return <MyProfile userCredentials={user}/>;
+        return <MyProfile />;
       case "Account Setting":
         return ;
       case "Security Setting":
