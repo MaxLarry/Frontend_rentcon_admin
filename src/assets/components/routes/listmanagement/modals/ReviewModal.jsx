@@ -289,20 +289,20 @@ function ReviewModal({
               </div>
             </div>
             <div className="flex justify-center mt-4 space-x-2">
-              <button
+              <Button
                 onClick={() =>
                   confirmDecline({ selectedIssues, additionalComments })
                 }
                 className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded"
               >
                 Confirm
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={cancelDecline}
                 className="bg-gray-500 hover:bg-gray-600  px-4 py-2 rounded"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         </div>

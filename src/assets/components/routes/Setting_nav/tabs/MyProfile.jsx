@@ -66,7 +66,13 @@ function MyProfile() {
   const [zoom, setZoom] = useState(1);
   const [croppedArea, setCroppedArea] = useState(null);
   const fileInputRef = useRef(null);
-
+  const closeModal = (shouldReset = true) => {
+    if (shouldReset) {
+      setFile(null);
+      setPreviewUrl(null);
+    }
+    setIsDialogOpen(false);
+  };
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -241,7 +247,13 @@ function MyProfile() {
         description: "Profile picture uploaded successfully.",
         variant: "success",
       });
+      const newProfilePicUrl = uploadResponse.data.profile.profilePicture; // Assume backend returns the new image URL
+      console.log(newProfilePicUrl);
+      setProfilePicture(newProfilePicUrl)
       setIsDialogOpen(false);
+      setSelectedFile(null);
+      setFile(null);
+      setPreviewUrl(null);
     } catch (error) {
       console.log("Upload Error:", error.response || error.message);
       toast({
@@ -249,7 +261,7 @@ function MyProfile() {
         variant: "destructive",
       });
     } finally {
-      setLoadingUpload(false); // Stop loader
+      setLoadingUpload(false);
     }
   };
 
@@ -283,7 +295,7 @@ function MyProfile() {
       </div>
       <div className="flex flex-col lg:flex-row gap-4 py-4">
         <div className="w-full lg:w-1/4 p-4 rounded-md flex flex-col items-center">
-          {isRemoving ? (
+          {isRemoving || loadingUpload ? (
             <Skeleton className="w-36 h-36 rounded-full" /> // Show Skeleton on remove
           ) : (
             <Avatar className="w-36 h-36 mb-4">
@@ -477,6 +489,7 @@ function MyProfile() {
                 setIsDialogOpen(false);
                 setSelectedFile(null);
                 setFile(null);
+                setPreviewUrl(null);
               }}
             >
               Cancel
