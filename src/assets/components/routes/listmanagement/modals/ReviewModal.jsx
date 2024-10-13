@@ -108,7 +108,7 @@ function ReviewModal({
                             (photo, index) => (
                               <CarouselItem
                                 key={index}
-                                className="flex justify-center items-center" 
+                                className="flex justify-center items-center"
                               >
                                 <img
                                   src={photo}
@@ -227,26 +227,27 @@ function ReviewModal({
             </div>
             <LegalDocuments selectedRequest={selectedRequest} />
             <div className="mb-5 py-3 flex justify-center space-x-5">
-              <span
+              <Button
+                type="button"
+                variant="outline"
                 onClick={handleApprove}
-                className="py-2 px-4 cursor-pointer bg-green-600 hover:bg-green-500 rounded"
+                className="text-green-600"
               >
                 Approve Request
-              </span>
-              <span
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
                 onClick={handleReject}
-                className="py-2 px-4 cursor-pointer bg-red-600 hover:bg-red-500 rounded"
+                className="text-red-600"
               >
-                Reject Request
-              </span>
+                Decline Request
+              </Button>
             </div>
           </CardContent>
         </ScrollArea>
         <CardFooter className="flex justify-end mt-4 py-0">
-          <Button
-            className="px-5 py-2 border rounded hover:bg-gray-700"
-            onClick={onClose}
-          >
+          <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>
         </CardFooter>
@@ -255,12 +256,12 @@ function ReviewModal({
       {/* Confirmation Popup for Decline */}
       {showConfirmPopup && confirmAction === "decline" && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 p-6 rounded-lg max-w-sm shadow-lg w-full md:max-w-xl lg:max-w-2xl">
-            <p className="mb-4 text-center">
+          <div className="bg-zinc-800 p-6 rounded-lg max-w-sm shadow-lg w-full md:max-w-xl lg:max-w-2xl text-white">
+            <p className="mb-4 text-center text-white">
               Are you sure you want to decline this request?
             </p>
             <div className="text-left">
-              <p className="mb-4">Please select the reason(s) for rejection:</p>
+              <p className="mb-4">Please select the reason(s) for decline:</p>
               <form>
                 {REVIEW_ISSUES.map((issue) => (
                   <div key={issue} className="flex items-center mb-2">
@@ -290,16 +291,14 @@ function ReviewModal({
             </div>
             <div className="flex justify-center mt-4 space-x-2">
               <Button
-                onClick={() =>
-                  confirmDecline({ selectedIssues, additionalComments })
-                }
-                className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded"
+                onClick={() => confirmDecline({ selectedIssues, additionalComments })}
+                className="bg-red-500 hover:bg-red-400 "
               >
                 Confirm
               </Button>
               <Button
                 onClick={cancelDecline}
-                className="bg-gray-500 hover:bg-gray-600  px-4 py-2 rounded"
+                className="bg-gray-500 hover:bg-gray-400"
               >
                 Cancel
               </Button>
@@ -311,22 +310,22 @@ function ReviewModal({
       {/* Confirmation Popup for Approve */}
       {showConfirmPopup && confirmAction === "approve" && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-zinc-800 p-6 rounded-lg max-w-sm shadow-lg text-center">
-            <p className="mb-4">
+          <div className="bg-zinc-800 p-6 rounded-lg max-w-md shadow-lg text-center">
+            <p className="mb-4 text-white">
               Are you sure you want to approve this request?
             </p>
-            <button
+            <Button
               onClick={confirmApprove}
-              className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded mr-2"
+              className="bg-green-500 hover:bg-green-400 mr-2"
             >
               Confirm
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={cancelApprove}
-              className="bg-gray-500 hover:bg-gray-600 px-4 py-2 rounded"
+              className="bg-gray-500 hover:bg-gray-400"
             >
               Cancel
-            </button>
+            </Button>
           </div>
         </div>
       )}

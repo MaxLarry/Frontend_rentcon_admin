@@ -59,8 +59,9 @@ function App() {
           <Route path="/compliance-safety" element={<ProtectedSafetyCompliance />} />
           <Route path="/data-overview" element={<ProtectedDataOverview />} />
           <Route path="/inbox" element={<ProtectedInbox />} />
+          <Route path="/settings" element={<ProtectedSettings/>} />
         </Route>
-        <Route path="/settings" element={<ProtectedSettings/>} />
+        
       </Routes>
     </Router>
   );

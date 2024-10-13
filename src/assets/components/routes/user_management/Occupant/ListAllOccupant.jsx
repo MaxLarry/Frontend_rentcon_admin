@@ -335,7 +335,7 @@ function ListAllOccupant() {
                       onCopy={() => setCopiedId(occupants._id)}
                     />
                   </TableCell>
-                  <TableCell>{occupants?.Status}</TableCell>
+                  <TableCell>{occupants?.activeStatus ? occupants.activeStatus : "N/A"}</TableCell>
                   <TableCell>
                     {occupants.last_login
                       ? format(
@@ -431,18 +431,18 @@ function ListAllOccupant() {
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex justify-end mt-4">
-                    <button
+                    <Button
                       className="px-4 py-2 mr-2 rounded-md text-gray-600"
                       onClick={() => setDialogOpenv1(false)}
                     >
                       Cancel
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       className="px-4 py-2 rounded-md bg-red-500 text-white"
                       onClick={handleDeleteSelectedOccupant} // Call the delete function
                     >
                       Confirm
-                    </button>
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>

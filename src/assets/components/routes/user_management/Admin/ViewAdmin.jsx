@@ -21,7 +21,7 @@ function ViewLandlordModal({ adminToView, title, closeModal }) {
         </DialogHeader>
         <ScrollArea>
           <div className="p-5" style={{ maxHeight: "600px" }}>
-            <div className="flex items-center space-x-10 border-b pb-6">
+            <div className="flex items-center space-x-10  pb-6">
               <div>
                 <Avatar className="w-24 h-24 lg:w-36 lg:h-36 rounded-full">
                   {adminToView?.profilePicture ? (
@@ -67,11 +67,6 @@ function ViewLandlordModal({ adminToView, title, closeModal }) {
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="py-6">
-              <h2>
-                <strong>Activity Logs</strong>
-              </h2>
             </div>
           </div>
         </ScrollArea>

@@ -193,10 +193,11 @@ function ListAllLandlord() {
       setLoading(true);
       try {
         const response = await axios.get("/user/landlord");
-        setListLandlord(response.data.landlords.length > 0 ? response.data.landlords : []);
+        setListLandlord(
+          response.data.landlords.length > 0 ? response.data.landlords : []
+        );
         setlandlordCount(response.data.count);
-      } 
-      catch (error) {
+      } catch (error) {
         console.error("There was an error fetching the Landlord List!", error);
         setError("Failed to fetch Landlord List");
         setListLandlord([]);
@@ -294,7 +295,7 @@ function ListAllLandlord() {
                     />
                   </TableCell>
                   <TableCell>
-                    {landlords?.status ? landlords.status : "N/A"}
+                    {landlords?.activeStatus ? landlords.activeStatus : "N/A"}
                   </TableCell>
                   <TableCell>
                     {landlords?.last_login
@@ -392,18 +393,18 @@ function ListAllLandlord() {
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex justify-end mt-4">
-                    <button
+                    <Button
                       className="px-4 py-2 mr-2 rounded-md text-gray-600"
                       onClick={() => setDialogOpenv1(false)}
                     >
                       Cancel
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       className="px-4 py-2 rounded-md bg-red-500 text-white"
                       onClick={handleDeleteSelectedLandlord} // Call the delete function
                     >
                       Confirm
-                    </button>
+                    </Button>
                   </div>
                 </DialogContent>
               </Dialog>
