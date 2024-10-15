@@ -6,6 +6,7 @@ import LegalDocuments from "./LegalDocs";
 import { REVIEW_ISSUES } from "../../../../constants";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Card,
   CardContent,
@@ -38,7 +39,6 @@ function ReviewModal({
 }) {
   const [selectedIssues, setSelectedIssues] = useState([]);
   const [additionalComments, setAdditionalComments] = useState("");
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   if (!isOpen) return null;
 
@@ -48,7 +48,7 @@ function ReviewModal({
         ? prev.filter((item) => item !== issue)
         : [...prev, issue]
     );
-  };
+  };  
 
   const handleCommentsChange = (e) => {
     setAdditionalComments(e.target.value);
@@ -151,15 +151,18 @@ function ReviewModal({
                 <div className="text-sm">
                   <h2 className="font-bold">Amenities Offer</h2>
                   <ul className="list-disc list-inside pl-5">
-                    {selectedRequest.amenities.map((amenity, index) => (
-                      <li key={index} className="flex items-center">
-                        <span className="text-teal-500 mr-2">•</span>
-                        {amenity}
-                      </li>
-                    ))}
+                    {JSON.parse(selectedRequest.amenities[0]).map(
+                      (amenity, index) => (
+                        <li key={index} className="flex items-center">
+                          <span className="text-teal-500 mr-2">•</span>
+                          {amenity}
+                        </li>
+                      )
+                    )}
                   </ul>
                 </div>
               ) : null}
+
               {/* Room Photos */}
               <div className="mt-5 text-sm">
                 <h2 className="font-bold">Room/Unit Available</h2>
@@ -265,12 +268,10 @@ function ReviewModal({
               <form>
                 {REVIEW_ISSUES.map((issue) => (
                   <div key={issue} className="flex items-center mb-2">
-                    <input
-                      type="checkbox"
-                      id={issue}
+                    <Checkbox
                       checked={selectedIssues.includes(issue)}
-                      onChange={() => handleCheckboxChange(issue)}
-                      className="mr-2 rounded focus:outline-none focus:ring-transparent text-teal-400"
+                      onCheckedChange={() => handleCheckboxChange(issue)}
+                      className="mr-2 text-teal-400"
                     />
                     <label className="text-sm" htmlFor={issue}>
                       {issue}
@@ -284,18 +285,25 @@ function ReviewModal({
                   value={additionalComments}
                   onChange={handleCommentsChange}
                   rows="4"
-                  className="w-full p-2 border border-gray-600 rounded bg-gray-200 text-zinc-900 focus:outline-none focus:ring-teal-500"
+                  className="w-full p-2 border max-h-56 border-gray-600 rounded bg-gray-200 text-zinc-900 focus:outline-none focus:ring-teal-500"
                   placeholder="Enter additional reasons or comments here..."
                 ></textarea>
               </div>
             </div>
+
             <div className="flex justify-center mt-4 space-x-2">
               <Button
-                onClick={() => confirmDecline({ selectedIssues, additionalComments })}
-                className="bg-red-500 hover:bg-red-400 "
+                 onClick={() => {
+                  // console.log('Selected Issues:', selectedIssues);
+                  // console.log('Additional Comments:', additionalComments);
+                  confirmDecline({ selectedIssues, additionalComments });
+                }}
+                className="bg-red-500 hover:bg-red-400"
+                disabled={selectedIssues.length === 0} // Disable if no issues are selected
               >
                 Confirm
               </Button>
+
               <Button
                 onClick={cancelDecline}
                 className="bg-gray-500 hover:bg-gray-400"

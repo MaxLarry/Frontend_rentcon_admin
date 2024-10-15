@@ -47,19 +47,24 @@ function UserManagement() {
 
   return (
     <ScrollArea
-      className="px-4 pt-14 sm:ml-60 h-full block gap-2 flex-col lg:flex-row translate-all
+      className="pt-14 lg:ml-60 h-full block gap-2 flex-col lg:flex-row translate-all
     duration-300"
     >
-      <div className="justify-between items-center px-5 p-9">
-        <h1 className="font-bold text-2xl">User Management</h1>
-        <p className="font-thin text-sm">Manage admins, landlord and occupant accounts, including roles and permissions.</p>
-      </div>
+      <div className="px-4" style={{ minWidth: "1200px" }}>
+        <div className="justify-between items-center px-5 p-9">
+          <h1 className="font-bold text-2xl">User Management</h1>
+          <p className="font-thin text-sm">
+            Manage admins, landlord and occupant accounts, including roles and
+            permissions.
+          </p>
+        </div>
 
-      <div className="grid gap-4 p-4 grid-cols-1 lg:grid-cols-6 max-w-full mx-auto">
-        <UserTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+        <div className="grid gap-4 p-4 grid-cols-6 max-w-full mx-auto">
+          <UserTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        <div className="lg:col-start-2 lg:col-end-7 lg:row-start-1 lg:row-end-3">
-          <CardContent>{renderContent()}</CardContent>
+          <div className="col-start-2 col-end-7 row-start-1 row-end-3">
+            <CardContent>{renderContent()}</CardContent>
+          </div>
         </div>
       </div>
     </ScrollArea>

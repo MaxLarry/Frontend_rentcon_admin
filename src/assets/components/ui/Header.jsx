@@ -13,7 +13,7 @@ const Header = ({ toggleSidebar }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-start rtl:justify-end">
             <button
-              className="inline-flex items-center mx-2 text-sm text-gray-500 rounded-sm sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-sky-900"
+              className="inline-flex items-center mx-2 text-sm text-gray-500 rounded-sm lg:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-sky-900"
               onClick={toggleSidebar}
             >
               <HiOutlineMenuAlt2 className="text-2xl" />

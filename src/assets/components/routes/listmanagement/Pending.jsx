@@ -123,17 +123,22 @@ function Pending({ searchQuery }) {
     }
   };
 
-  const confirmDecline = async () => {
+  const confirmDecline = async ({ selectedIssues, additionalComments }) => {
     try {
-      await updateRequestStatus(selectedRequest._id, "Rejected");
+      await updateRequestStatus(
+        selectedRequest._id,
+        "Rejected",
+        selectedIssues,
+        additionalComments
+      );
       setShowReviewModal(false); // Close the modal after rejection
       setSelectedRequest(null); // Clear the selected request
       setShowConfirmPopup(false); // Hide the confirmation popup
+      // console.log(selectedIssues, additionalComments);
     } catch (error) {
       console.error("Error rejecting request", error);
     }
   };
-
   const cancelApprove = () => {
     setShowConfirmPopup(false); // Hide the confirmation popup
   };
@@ -142,13 +147,40 @@ function Pending({ searchQuery }) {
     setShowConfirmPopup(false); // Hide the confirmation popup
   };
 
-  const updateRequestStatus = async (id, status) => {
+  const updateRequestStatus = async (
+    id,
+    status,
+    selectedIssues = [],
+    additionalComments = ""
+  ) => {
+      
     try {
-      const response = await axios.put(`/requests/${id}`, { status });
+      // Prepare the payload to be sent to the backend
+      const payload = { status };
+      if (status === "Rejected") {
+        payload.selectedIssues = selectedIssues;
+        payload.additionalComments = additionalComments;
+      }
+
+      console.log(payload);
+      // Make the API request to update the request status
+      const response = await axios.put(`/requests/${id}`, payload);
+
       console.log(`Status updated for request ID: ${id}`, response.data); // Log response
+
+      // Update the state of pending requests
       setPendingRequests((prevRequests) =>
         prevRequests.map((request) =>
           request._id === id ? { ...request, status } : request
+        )
+      );
+
+      // Optionally, filter out approved or rejected requests
+      setPendingRequests((prevRequests) =>
+        prevRequests.filter(
+          (request) =>
+            request._id !== id ||
+            (status !== "Approved" && status !== "Rejected")
         )
       );
     } catch (error) {
@@ -156,29 +188,30 @@ function Pending({ searchQuery }) {
     }
   };
 
-  const filteredRequests = pendingRequests.filter((request) => {
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    const requestId = request._id ? request._id.toLowerCase() : "";
-    const fullName = request.profile?.fullName
-      ? request.profile.fullName.toLowerCase()
-      : "";
-    const status = request.status ? request.status.toLowerCase() : "";
-    const createdAt = request.created_at
-      ? format(new Date(request.created_at), "yyyy-MM-dd HH:mm").toLowerCase()
-      : "";
+  const filteredRequests = pendingRequests
+    .filter((request) => {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      const requestId = request._id ? request._id.toLowerCase() : "";
+      const fullName = request.profile?.fullName
+        ? request.profile.fullName.toLowerCase()
+        : "";
+      const status = request.status ? request.status.toLowerCase() : "";
+      const createdAt = request.created_at
+        ? format(new Date(request.created_at), "yyyy-MM-dd HH:mm").toLowerCase()
+        : "";
 
-    return (
-      requestId.includes(lowerCaseQuery) ||
-      fullName.includes(lowerCaseQuery) ||
-      status.includes(lowerCaseQuery) ||
-      createdAt.includes(lowerCaseQuery)
-    );
-  })
-  .sort((a, b) => {
-    // Sort by created_at in descending order (new to old)
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
-  
+      return (
+        requestId.includes(lowerCaseQuery) ||
+        fullName.includes(lowerCaseQuery) ||
+        status.includes(lowerCaseQuery) ||
+        createdAt.includes(lowerCaseQuery)
+      );
+    })
+    .sort((a, b) => {
+      // Sort by created_at in descending order (new to old)
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredRequests.slice(

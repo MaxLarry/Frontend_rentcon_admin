@@ -16,7 +16,7 @@ function Dashboard() {
   return (
     <>
       <ScrollArea
-        className=" px-4 pt-14 sm:ml-60 h-full block gap-2 flex-col lg:flex-row translate-all
+        className=" px-4 pt-14 lg:ml-60 h-full block gap-2 flex-col lg:flex-row translate-all
     duration-300"
       >
         <div className="justify-between items-center px-5 p-9">

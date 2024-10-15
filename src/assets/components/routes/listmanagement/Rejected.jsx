@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { format } from "date-fns";
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import CopyableText from "../../ui/CopyableText";
 import { Checkbox } from "@/components/ui/checkbox"; // Import Shadcn checkbox
 import { Toaster } from "@/components/ui/toaster";
@@ -50,22 +50,30 @@ function Rejected({ searchQuery }) {
   const [dialogOpen, setDialogOpen] = useState(false); // Dialog state
   const itemsPerPage = 20;
 
-  const filteredRequests = rejectedRequests.filter((property) => {
-    const lowerCaseQuery = searchQuery.toLowerCase();
-    const requestId = property._id ? property._id.toLowerCase() : "";
-    const fullName = property.profile?.fullName ? property.profile.fullName.toLowerCase() : "";
-    const createdAt = property.created_at ? format(new Date(property.created_at), "yyyy-MM-dd HH:mm").toLowerCase() : "";
+  const filteredRequests = rejectedRequests
+    .filter((property) => {
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      const requestId = property._id ? property._id.toLowerCase() : "";
+      const fullName = property.profile?.fullName
+        ? property.profile.fullName.toLowerCase()
+        : "";
+      const createdAt = property.created_at
+        ? format(
+            new Date(property.created_at),
+            "yyyy-MM-dd HH:mm"
+          ).toLowerCase()
+        : "";
 
-    return (
-      requestId.includes(lowerCaseQuery) ||
-      fullName.includes(lowerCaseQuery) ||
-      createdAt.includes(lowerCaseQuery)
-    );
-  })
-  .sort((a, b) => {
-    // Sort by created_at in descending order (new to old)
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
+      return (
+        requestId.includes(lowerCaseQuery) ||
+        fullName.includes(lowerCaseQuery) ||
+        createdAt.includes(lowerCaseQuery)
+      );
+    })
+    .sort((a, b) => {
+      // Sort by created_at in descending order (new to old)
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -96,19 +104,19 @@ function Rejected({ searchQuery }) {
   //handle deletion hehe
   const handleDeleteSelectedRequests = async () => {
     if (selectedRequests.length === 0) return;
-  
+
     try {
       // Send a DELETE request with the selected property IDs
       const response = await axios.delete("/requests/deletion-properties", {
         data: { ids: selectedRequests },
       });
-  
+
       // Show success toast with message from backend
       toast({
         description: response.data.message, // message from backend
         variant: "success", // Use a success variant
       });
-  
+
       // Update the state to remove the deleted requests
       setRejectedRequests((prevRequests) =>
         prevRequests.filter(
@@ -126,7 +134,6 @@ function Rejected({ searchQuery }) {
       });
     }
   };
-  
 
   //fetch all rejected list properties mamamo
   useEffect(() => {
@@ -134,7 +141,7 @@ function Rejected({ searchQuery }) {
       setLoading(true);
       try {
         const response = await axios.get("/requests/rejected-properties");
-  
+
         // Ensure that the response is an array, even if it's empty
         if (Array.isArray(response.data)) {
           setRejectedRequests(response.data);
@@ -142,16 +149,18 @@ function Rejected({ searchQuery }) {
           setRejectedRequests([]); // Fallback if the response is not an array
         }
       } catch (error) {
-        console.error("There was an error fetching the pending requests!", error);
+        console.error(
+          "There was an error fetching the pending requests!",
+          error
+        );
         setRejectedRequests([]); // Fallback in case of error
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchRejectedRequests();
   }, []);
-  
 
   useEffect(() => {
     if (selectedRequests.length !== currentItems.length) {
@@ -220,14 +229,25 @@ function Rejected({ searchQuery }) {
                       : "N/A"}
                   </TableCell>
                   <TableCell>
-                    {property.rejected_at
+                    {property.rejected_date
                       ? format(
-                          new Date(property.rejected_at),
+                          new Date(property.rejected_date),
                           "yyyy-MM-dd HH:mm"
                         )
                       : "N/A"}
                   </TableCell>
-                  <TableCell>{property.note || "No notes available"}</TableCell>
+                  <TableCell className="max-w-xs space-y-2">
+                    <div>
+                      <strong className="text-red-400">Reason of Decline:</strong>{" "}
+                      {property.reasonDecline.length > 0
+                        ? property.reasonDecline.join(", ")
+                        : "No notes available."}
+                    </div>
+                    <div>
+                      <strong className="text-lime-400">Comments:</strong>{" "}
+                      {property.additionalComments || "No comments available."}
+                    </div>
+                  </TableCell>
                 </TableRow>
               ))
             ) : (
@@ -277,7 +297,7 @@ function Rejected({ searchQuery }) {
             </div>
             <div>
               <Button
-              variant="outline"
+                variant="outline"
                 className="mr-2 "
                 onClick={() => setSelectedRequests([])}
               >
@@ -285,10 +305,7 @@ function Rejected({ searchQuery }) {
               </Button>
               <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button
-                  variant= "outline"
-                    onClick={() => setDialogOpen(true)}
-                  >
+                  <Button variant="outline" onClick={() => setDialogOpen(true)}>
                     Delete
                   </Button>
                 </DialogTrigger>
@@ -302,15 +319,15 @@ function Rejected({ searchQuery }) {
                   </DialogHeader>
                   <div className="flex justify-end mt-4">
                     <Button
-                    variant= "outline"
+                      variant="outline"
                       className="mr-2"
                       onClick={() => setDialogOpen(false)}
                     >
                       Cancel
                     </Button>
                     <Button
-                    variant= "outline"
-                      className= "text-red-500"
+                      variant="outline"
+                      className="text-red-500"
                       onClick={handleDeleteSelectedRequests} // Call the delete function
                     >
                       Confirm
@@ -322,7 +339,7 @@ function Rejected({ searchQuery }) {
           </div>
         </div>
       )}
-      
+
       <Toaster />
     </div>
   );

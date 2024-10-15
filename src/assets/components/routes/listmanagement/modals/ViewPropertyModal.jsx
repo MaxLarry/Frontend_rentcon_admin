@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/dialog";
 
 function ViewPropertyModal({ selectedRequest, title, closeModal }) {
-
   return (
     <Dialog open={true} onOpenChange={closeModal}>
       <DialogContent className="max-w-md md:max-w-2xl lg:max-w-4xl absolute p-6 rounded-lg shadow-lg">
@@ -46,10 +45,12 @@ function ViewPropertyModal({ selectedRequest, title, closeModal }) {
               </p>
               <p>
                 <strong>Listed Date: </strong>
-                {format(
-                  new Date(selectedRequest.created_at),
-                  "yyyy-MM-dd HH:mm"
-                )}
+                {selectedRequest.approved_date
+                  ? format(
+                      new Date(selectedRequest.approved_date),
+                      "yyyy-MM-dd HH:mm"
+                    )
+                  : "N/A"}
               </p>
             </div>
 
@@ -68,8 +69,7 @@ function ViewPropertyModal({ selectedRequest, title, closeModal }) {
                         <CarouselPrevious
                           className="absolute left-0 z-10 bg-gray-700 p-2 rounded-full hover:bg-gray-600"
                           style={{ transform: "translateX(-50%)" }} // Ensure the button is visible outside the image
-                        >
-                        </CarouselPrevious>
+                        ></CarouselPrevious>
                         <CarouselContent>
                           {selectedRequest.property_photo.map(
                             (photo, index) => (
@@ -90,8 +90,7 @@ function ViewPropertyModal({ selectedRequest, title, closeModal }) {
                         <CarouselNext
                           className="absolute right-0 z-10 bg-gray-700 p-2 rounded-full hover:bg-gray-600"
                           style={{ transform: "translateX(50%)" }} // Ensure the button is visible outside the image
-                        >
-                        </CarouselNext>
+                        ></CarouselNext>
                         <CarouselDots />
                       </Carousel>
                     </div>
@@ -117,15 +116,18 @@ function ViewPropertyModal({ selectedRequest, title, closeModal }) {
                 <div className="text-sm">
                   <h2 className="font-bold">Amenities Offer</h2>
                   <ul className="list-disc list-inside pl-5">
-                    {selectedRequest.amenities.map((amenity, index) => (
-                      <li key={index} className="flex items-center">
-                        <span className="text-teal-500 mr-2">•</span>
-                        {amenity}
-                      </li>
-                    ))}
+                    {JSON.parse(selectedRequest.amenities[0]).map(
+                      (amenity, index) => (
+                        <li key={index} className="flex items-center">
+                          <span className="text-teal-500 mr-2">•</span>
+                          {amenity}
+                        </li>
+                      )
+                    )}
                   </ul>
                 </div>
               ) : null}
+
               {/* Room Photos */}
               <div className="mt-5 text-sm">
                 <h2 className="font-bold">Room/Unit Available</h2>

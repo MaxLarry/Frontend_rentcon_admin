@@ -1,27 +1,25 @@
 import React, { useState } from 'react';
 import { AiOutlineClose } from 'react-icons/ai'; // Importing the X icon
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 function LegalDocuments({ selectedRequest }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isImageOpen, setIsImageOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
-  // Function to handle the click event and open the modal
-  const handleImageClick = (doc) => {
-    setSelectedImage(doc); // Set the clicked image as the selected image
-    setIsModalOpen(true);  // Open the modal
+
+  const openImageModal = (doc) => {
+    setSelectedImage(doc); 
+    setIsImageOpen(true); // Open the image modal
   };
 
-  // Function to close the modal
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedImage(null); // Clear the selected image when closing the modal
-  };
-
-  // Function to handle outside click to close the modal
-  const handleOutsideClick = (e) => {
-    if (e.target.classList.contains('modal-overlay')) {
-      handleCloseModal();
-    }
+  const closeImageModal = () => {
+    setIsImageOpen(false); // Close the image modal
+    setSelectedImage(null);
   };
 
   return (
@@ -37,7 +35,7 @@ function LegalDocuments({ selectedRequest }) {
               src={doc}
               alt={`Legal Document ${index + 1}`}
               className="w-full h-auto rounded-lg cursor-pointer" // Add pointer cursor for clickable effect
-              onClick={() => handleImageClick(doc)} // Handle click event
+              onClick={() => openImageModal(doc)} // Handle click event
             />
           ))
         ) : (
@@ -45,27 +43,18 @@ function LegalDocuments({ selectedRequest }) {
         )}
       </div>
 
-      {/* Modal for displaying the clicked image */}
-      {isModalOpen && selectedImage && (
-        <div
-          className="modal-overlay fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50"
-          onClick={handleOutsideClick} // Close when clicking outside the image
-        >
-          <div className="relative">
-            <img
-              src={selectedImage}
-              alt="Selected Legal Document"
-              className="max-h-[80vh] w-auto" // Adjusted height for better fit
-            />
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-[-2.5rem] right-[-3.5rem] p-2 bg-white text-black rounded-full"
-            >
-              <AiOutlineClose size={24} />
-            </button>
-          </div>
-        </div>
-      )}
+      <Dialog open={isImageOpen} onOpenChange={closeImageModal}>
+        <DialogTitle></DialogTitle>
+        <DialogDescription></DialogDescription>
+        <DialogContent className="p-0 max-h-screen-sm rounded-lg overflow-hidden">
+          <img
+            src={selectedImage}
+            alt="legal_docs"
+            className="w-full h-full object-contain"
+          />
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

@@ -154,7 +154,7 @@ function ReviewModal({
 
       {/* Modal for large image view */}
       <Dialog open={isImageOpen} onOpenChange={closeImageModal}>
-        <DialogContent className="p-0 max-w-5xl rounded-lg overflow-hidden">
+        <DialogContent className="p-0 max-h-screen-sm rounded-lg overflow-hidden">
           <img
             src={requestToView.valid_id}
             alt="Large View ID"

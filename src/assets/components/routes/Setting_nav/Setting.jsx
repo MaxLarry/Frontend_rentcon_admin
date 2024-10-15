@@ -49,7 +49,8 @@ const Settings = () => {
   };
 
   return (
-    <ScrollArea className="flex flex-col lg:p-20 p-10 min-h-screen translate-all duration-300 overflow-auto">
+  <ScrollArea className="flex flex-col lg:py-20 py-10 h-full translate-all duration-300 overflow-x-auto">
+    <div className="lg:px-20 px-10" style={{ minWidth: "1200px", overflowX: "auto" }}>
       <div className="border-b pb-4">
         <div className="flex items-center space-x-2 noselect">
           <IoIosArrowBack className="text-2xl cursor-pointer" onClick={handleBackClick} // Add click handler 
@@ -60,12 +61,13 @@ const Settings = () => {
           Manage your account setting and preferences.
         </p>
       </div>
-      <div className="grid gap-4 p-4 pt-10 grid-cols-6 max-w-full mx-0">
+      <div className="grid gap-4 p-4 pt-10 grid-cols-6 mx-auto">
         <SettingTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        <div className="lg:col-start-2 lg:col-end-7 lg:row-start-1 lg:row-end-3">
+        <div className="col-start-2 col-end-7 row-start-1 row-end-3">
           <CardContent>{renderContent()}</CardContent>
         </div>
+      </div>
       </div>
     </ScrollArea>
   );

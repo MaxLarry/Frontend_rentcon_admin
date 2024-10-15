@@ -93,8 +93,8 @@ function Approved({ searchQuery }) {
 
     try {
       // Send a DELETE request with the selected property ID
-      const response = await axios.delete('/requests/deletion-properties', {
-        data: { ids: [propertyToDelete._id] }
+      const response = await axios.delete("/requests/deletion-properties", {
+        data: { ids: [propertyToDelete._id] },
       });
 
       // Show success toast with message from backend
@@ -206,12 +206,27 @@ function Approved({ searchQuery }) {
                       onCopy={() => handleCopy(property._id)}
                     />
                   </TableCell>
-                  <TableCell>{property.profile?.fullName ? property.profile?.fullName  : "N/A"}</TableCell>
-                  <TableCell>{property.typeOfProperty  ? property.typeOfProperty  : "N/A"}</TableCell>
-                  <TableCell>{property.address ? property.address  : "N/A"}</TableCell>
-                  <TableCell>{property.roomCount ? property.roomCount  : "N/A"}</TableCell>
                   <TableCell>
-                    {property.approved_date ? format(new Date(property.approved_date), "yyyy-MM-dd HH:mm") : "N/A"}
+                    {property.profile?.fullName
+                      ? property.profile?.fullName
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    {property.typeOfProperty ? property.typeOfProperty : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    {property.address ? property.address : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    {property.roomCount ? property.roomCount : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    {property.approved_date
+                      ? format(
+                          new Date(property.approved_date),
+                          "yyyy-MM-dd HH:mm"
+                        )
+                      : "N/A"}
                   </TableCell>
                   <TableCell className="w-10 pl-0 text-center">
                     <OptionEllipsis

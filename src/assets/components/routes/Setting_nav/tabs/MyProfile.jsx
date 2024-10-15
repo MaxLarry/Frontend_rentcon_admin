@@ -137,7 +137,6 @@ function MyProfile() {
 
   // Submit handler
   const onSubmit = async (data) => {
-    setLoading(true);
     try {
       // Ensure data structure is correct
       const payload = {
@@ -149,6 +148,13 @@ function MyProfile() {
       };
 
       await axios.put(`/user/admin-edit/${user._id}`, payload);
+      form.reset({
+        firstName: user?.first_name || "",
+        lastName: user?.last_name || "",
+        email: user?.email || "",
+        role: user?.role || "",
+        phone: user?.phone_num || "",
+      });
       toast({
         title: "Success",
         description: "Admin updated successfully.",
@@ -199,7 +205,7 @@ function MyProfile() {
       return;
     }
 
-    console.log("Selected File Type:", file.type);
+    //console.log("Selected File Type:", file.type); //debugging
 
     const validTypes = ["image/jpeg", "image/png", "image/webp"];
     if (!validTypes.includes(file.type)) {
@@ -228,8 +234,8 @@ function MyProfile() {
       );
       formData.append("adminId", user._id); // Add adminId here
 
-      console.log("Uploading to:", `/user/admin-edit-pic/${user._id}`);
-      console.log("FormData Entries:", Array.from(formData.entries())); // Log FormData entries
+      //console.log("Uploading to:", `/user/admin-edit-pic/${user._id}`); //debugging
+      // console.log("FormData Entries:", Array.from(formData.entries())); // Log FormData entries //debugging
 
       const uploadResponse = await axios.put(
         `/user/admin-edit-pic/${user._id}`,
@@ -241,7 +247,7 @@ function MyProfile() {
         }
       );
 
-      console.log("Upload Response:", uploadResponse.data);
+      //console.log("Upload Response:", uploadResponse.data); //debugging
       toast({
         title: "Success",
         description: "Profile picture uploaded successfully.",
@@ -249,7 +255,7 @@ function MyProfile() {
       });
       const newProfilePicUrl = uploadResponse.data.profile.profilePicture; // Assume backend returns the new image URL
       console.log(newProfilePicUrl);
-      setProfilePicture(newProfilePicUrl)
+      setProfilePicture(newProfilePicUrl);
       setIsDialogOpen(false);
       setSelectedFile(null);
       setFile(null);
