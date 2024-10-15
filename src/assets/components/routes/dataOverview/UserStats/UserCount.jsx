@@ -85,7 +85,7 @@ function UserCount() {
   };
 
   return (
-    <Card className="rounded-md shadow-md block items-center col-start-1 md:col-end-3 lg:col-end-4 noselect">
+    <Card className="rounded-md shadow-md block items-center col-start-1 col-end-4 noselect">
       <CardHeader className="items-center pb-0">
         <CardTitle className="text-xl font-bold">Total Number of User</CardTitle>
         <CardDescription>Current Total of Registered User</CardDescription>

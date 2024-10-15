@@ -74,7 +74,7 @@ function AveragePrice() {
   };
 
   return (
-    <Card className="rounded-md shadow-md block items-center col-start-7 md:col-end-3 lg:col-end-10 noselect">
+    <Card className="rounded-md shadow-md block items-center col-start-7 col-end-10 noselect">
       <CardHeader className="items-center pb-0">
         <CardTitle className="text-xl font-bold">Average Price</CardTitle>
         <CardDescription>Boarding House and Apartment</CardDescription>

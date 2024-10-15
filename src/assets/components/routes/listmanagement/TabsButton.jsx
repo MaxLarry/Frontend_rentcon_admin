@@ -23,7 +23,7 @@ function TabsButton({ activeTab, setActiveTab }) {
   };
 
   return (
-    <div className="flex flex-wrap justify-center items-center py-5 lg:gap-40 md:gap-10">
+    <div className="flex flex-wrap justify-center items-center py-5 lg:gap-40 gap-20">
       {tabs.map((tab, index) => (
         <button
           key={index}

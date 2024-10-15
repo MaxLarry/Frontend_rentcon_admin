@@ -12,7 +12,7 @@ function UserStats() {
       <div className="flex justify-between items-center px-5 mt-10">
         <h1 className="font-bold text-xl pb-5">Property Listing</h1>
       </div>
-      <div className="grid p-4 gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-9 grid-rows-subgrid max-w-full mx-auto">
+      <div className="grid p-4 gap-6 grid-cols-9 grid-rows-subgrid max-w-full mx-auto">
         <PropertyListedCount />
         <PropertylistingStatus/>
         <ListedPropertyRemove/>

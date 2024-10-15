@@ -178,7 +178,7 @@ function Rejected({ searchQuery }) {
   }
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="mx-auto px-4">
       <div className="flex justify-center overflow-x-auto">
         <Table className="min-w-full dark:border-zinc-600">
           <TableHeader>

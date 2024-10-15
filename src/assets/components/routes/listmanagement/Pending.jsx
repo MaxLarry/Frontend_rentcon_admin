@@ -222,9 +222,9 @@ function Pending({ searchQuery }) {
   const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="w-full px-4">
       <div className="flex justify-center overflow-x-auto">
-        <Table className="min-w-full  dark:border-zinc-600">
+        <Table className="w-full dark:border-zinc-600">
           <TableHeader>
             <TableRow className="border-b dark:border-zinc-600">
               {req_column.map((column) => (

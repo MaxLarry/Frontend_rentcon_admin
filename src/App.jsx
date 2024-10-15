@@ -10,6 +10,7 @@ import withAuth from './assets/components/auth/withAuth';
 import PublicRoute from './assets/components/auth/publicRoute';
 import Layout from './assets/components/ui/Layout'; // New Layout Component
 import Settings from './assets/components/routes/Setting_nav/Setting'; 
+import Inbox from './assets/components/routes/Inbox/Inbox';
 import axios from 'axios';
 
 axios.defaults.baseURL = 'http://localhost:5000';
@@ -39,7 +40,7 @@ function App() {
   const ProtectedListingManagement = withAuth(ListingManagement);
   const ProtectedActivityLogs = withAuth(ActivityLogs);
   const ProtectedUserManagement = withAuth(UserManagement);
-  const ProtectedInbox = withAuth(ActivityLogs);
+  const ProtectedInbox = withAuth(Inbox);
   const ProtectedDataOverview = withAuth(DataOverview);
   const ProtectedSafetyCompliance = withAuth(ActivityLogs);
   const ProtectedSettings = withAuth(Settings);
