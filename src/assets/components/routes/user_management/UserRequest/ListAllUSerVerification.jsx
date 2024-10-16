@@ -4,20 +4,11 @@ import { format } from "date-fns";
 import CopyableText from "../../../ui/CopyableText";
 import { FaUserCircle } from "react-icons/fa";
 import { SearchInput } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox"; // Import Shadcn checkbox
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ReviewModal from "./ReviewModal";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -95,9 +86,12 @@ function ListAllUSerVerification() {
   const confirmApprove = async () => {
     try {
       await updateRequestStatus(requestToView._id, "approved", true); // Mark profile as complete
-      setShowReviewModal(false); 
+      setListUserRequest((prevRequests) =>
+        prevRequests.filter((request) => request._id !== requestToView._id) // Remove approved request from the list
+      );
+      setShowReviewModal(false);
       setRequestToView(null);
-      setShowConfirmPopup(false); 
+      setShowConfirmPopup(false);
     } catch (error) {
       console.error("Error approving request", error);
     }
@@ -106,6 +100,9 @@ function ListAllUSerVerification() {
   const confirmDecline = async () => {
     try {
       await updateRequestStatus(requestToView._id, "rejected", false); // Mark profile as incomplete
+      setListUserRequest((prevRequests) =>
+        prevRequests.filter((request) => request._id !== requestToView._id) // Remove declined request from the list
+      );
       setShowReviewModal(false);
       setRequestToView(null);
       setShowConfirmPopup(false);
@@ -113,7 +110,7 @@ function ListAllUSerVerification() {
       console.error("Error rejecting request", error);
     }
   };
-
+  
   const cancelApprove = () => {
     setShowConfirmPopup(false); // Hide the confirmation popup
   };
@@ -136,6 +133,7 @@ function ListAllUSerVerification() {
             : request
         )
       );
+      
     } catch (error) {
       console.error(`Error updating Profile Status for request with ID: ${id}`, error);
     }
@@ -240,7 +238,7 @@ function ListAllUSerVerification() {
                     {request.registeredDate
                       ? format(
                           new Date(request.registeredDate),
-                          "yyyy-MM-dd HH:mm"
+                          "MMMM dd, yyyy hh:mm a"
                         )
                       : "N/A"}
                   </TableCell>
@@ -248,7 +246,7 @@ function ListAllUSerVerification() {
                     {request.dateRequest
                       ? format(
                           new Date(request.dateRequest),
-                          "yyyy-MM-dd HH:mm"
+                          "MMMM dd, yyyy hh:mm a"
                         )
                       : "N/A"}
                   </TableCell>
