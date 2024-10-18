@@ -148,13 +148,6 @@ function MyProfile() {
       };
 
       await axios.put(`/user/admin-edit/${user._id}`, payload);
-      form.reset({
-        firstName: user?.first_name || "",
-        lastName: user?.last_name || "",
-        email: user?.email || "",
-        role: user?.role || "",
-        phone: user?.phone_num || "",
-      });
       toast({
         title: "Success",
         description: "Admin updated successfully.",
@@ -162,6 +155,13 @@ function MyProfile() {
         variant: "success",
       });
       setIsEditing(false);
+      form.reset({
+        firstName: user?.first_name || "",
+        lastName: user?.last_name || "",
+        email: user?.email || "",
+        role: user?.role || "",
+        phone: user?.phone_num || "",
+      });
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
       toast({

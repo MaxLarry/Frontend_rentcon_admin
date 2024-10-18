@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 
 import {
@@ -20,6 +20,7 @@ import {
 
 function UserCount() {
   const [chartData, setChartData] = useState([]);
+  const [percentageChange, setPercentageChange] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -31,7 +32,7 @@ function UserCount() {
         const response = await axios.get("/data/user-count");
 
         if (response.data && response.data.length > 0) {
-          const { LandlordCount, OccupantCount, UnverifiedCount } = response.data[0];
+          const { LandlordCount, OccupantCount, UnverifiedCount, percentageChange } = response.data[0];
 
           // Map the response to the expected chartData format
           setChartData([
@@ -39,6 +40,7 @@ function UserCount() {
             { category: "Occupants", user: OccupantCount, fill: "var(--color-occupant)" },
             { category: "Unverified Users", user: UnverifiedCount, fill: "var(--color-unverified)" },
           ]);
+          setPercentageChange(percentageChange);
         } else {
           setChartData([]);
         }
@@ -83,6 +85,11 @@ function UserCount() {
       color: "hsl(var(--chart-3))",
     },
   };
+  const isUp = percentageChange > 0;
+  const changeText = isUp
+    ? `Number of users up by ${Math.abs(percentageChange).toFixed(1)}% this month`
+    : `Number of users down by ${Math.abs(percentageChange).toFixed(1)}% this month`;
+
 
   return (
     <Card className="rounded-md shadow-md block items-center col-start-1 col-end-4 noselect">
@@ -145,7 +152,8 @@ function UserCount() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+        {changeText} 
+        {isUp ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
         </div>
         <div className="leading-none text-muted-foreground">
           Showing the total of user who Registered
