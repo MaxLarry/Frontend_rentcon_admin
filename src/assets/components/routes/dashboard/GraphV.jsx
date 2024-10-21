@@ -1,31 +1,41 @@
-import React, { useState } from "react";
-import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis, Tooltip } from "recharts"; 
+import * as React from "react";
+import { useState, useEffect } from "react";
+import { TrendingUp, TrendingDown} from "lucide-react";
+import axios from "axios";
 import {
-  ChartContainer,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import { Card, CardContent, CardFooter } from "@/components/ui/card"; 
-import DropdownFilter from "./DropdownFilter"; 
+  CartesianGrid,
+  Line,
+  Area,
+  AreaChart,
+  LineChart,
+  XAxis,
+  Tooltip,
+} from "recharts";
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import DropdownFilter from "./DropdownFilter";
 
 function GraphV() {
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [percentageChange, setPercentageChange] = useState(null);
+  const [error, setError] = useState(null);
   const [selectedValue, setSelectedValue] = useState("30d");
+  const [todaysRequestCount, setTodaysRequestCount] = useState(0);
 
   const chartConfig = {
-    Request: {
-      label: "Request",
+    request: {
+      label: "request",
       color: "hsl(var(--chart-1))",
     },
-  }
-
-  const chartData = [
-    { month: "January", Request: 186, },
-    { month: "February", Request: 305, },
-    { month: "March", Request: 237, },
-    { month: "April", Request: 73, },
-    { month: "May", Request: 209, },
-    { month: "June", Request: 214, },
-  ];
+  };
 
   const opt = [
     { value: "24h", label: "24h" },
@@ -35,76 +45,178 @@ function GraphV() {
     { value: "all", label: "All time" },
   ];
 
+  useEffect(() => {
+    const fetchListingRequest = async () => {
+      setLoading(true);
+
+      try {
+        // Fetching data from your backend with the selected timeframe
+        const response = await axios.get(`/data/request-listing-status`, {
+          params: { timeframe: selectedValue },
+        });
+
+        if (
+          response.data &&
+          response.data.counts &&
+          response.data.counts.length > 0
+        ) {
+          const formattedData = response.data.counts.map((item) => ({
+            time: item.days || item.hours || item.date || item.month,
+            request: item.request_count,
+            fullDate: item.date,
+          }));
+          const percentageChange = response.data.percentageChange;
+
+          setChartData(formattedData);
+          setPercentageChange(percentageChange);
+        } else {
+          setChartData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching newly registered users:", error);
+        setError("Failed to fetch Newly Register data");
+        setChartData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchTodaysRequest = async () => {
+      try {
+        const response = await axios.get(`/data/request-listing-status`, {
+          params: { timeframe: "24h" },
+          //count just the request
+        });
+
+        const todayCount = response.data.counts.reduce(
+          (acc, curr) => acc + curr.request_count,
+          0
+        );
+        setTodaysRequestCount(todayCount);
+      } catch (error) {
+        console.error("Error fetching today's listing request:", error);
+        setTodaysRequestCount(0);
+      }
+    };
+
+    fetchListingRequest();
+    fetchTodaysRequest();
+  }, [selectedValue]); // Re-fetch when selected timeframe changes
+
+  const isUp = percentageChange > 0;
+  const changeText =
+    percentageChange === 0
+      ? `Listing Request percentage is unchanged this month`
+      : isUp
+      ? `Listing Request is up by ${Math.abs(percentageChange).toFixed(
+          1
+        )}% this month`
+      : `Listing Request is down by ${Math.abs(percentageChange).toFixed(
+          1
+        )}% this month`;
 
   return (
-    <Card className="p-7 rounded-md shadow-md block items-center lg:col-start-4 lg:col-end-7 lg:row-start-1 lg:row-end-3 md:col-start-1 md:col-end-3 relative">
-      <CardContent className="p-0">
-        <div className="flex justify-between pb-6">
-          <div>
-            <div className="text-lg font-bold">1230</div>
-            <span className="text-md font-normal">Listing Requests</span>
-          </div>
-          <DropdownFilter options={opt} selectedValue={selectedValue} setSelectedValue={setSelectedValue} />
+    <Card className="px-10 py-8 rounded-md shadow-md block items-center lg:col-start-4 lg:col-end-7 lg:row-start-1 lg:row-end-3 md:col-start-1 md:col-end-3 relative">
+      <CardHeader className="flex flex-row justify-between p-0 pb-6">
+        <div>
+          <CardTitle className="text-xl font-bold">Listing Request</CardTitle>
+          <CardDescription>
+            Showing Listing Request over {selectedValue}
+          </CardDescription>
         </div>
-        <ChartContainer config={chartConfig} className='pb-6'>
-          <AreaChart
+        <div>
+          <DropdownFilter
+            options={opt}
+            selectedValue={selectedValue}
+            setSelectedValue={setSelectedValue}
+          />
+        </div>
+      </CardHeader>
+      <CardContent className="p-0">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-[250px] w-full pb-6"
+        >
+          <LineChart
             accessibilityLayer
             data={chartData}
             margin={{
-              left: 12,
-              right: 12,
+              top: 20,
+              left: 30,
+              right: 30,
             }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey="time"
               tickLine={false}
               axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickMargin={10}
+              fontSize={10}
+              // Show only month and day for 30d timeframe
+              tickFormatter={(time) => {
+                if (selectedValue === "90d") {
+                  const [startDate, endDate] = time.split(" - ");
+                  return new Date(startDate).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  });
+                } else if (selectedValue === "30d") {
+                  return new Date(time).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  });
+                } else if (selectedValue === "24h") {
+                  // Format for 24h
+                  const [startTime] = time.split(" - ");
+                  return startTime;
+                }
+                return time;
+              }}
             />
-            <Tooltip cursor={false} content={<ChartTooltipContent />} />
-            <defs>
-              <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-Request)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-Request)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            </defs>
-            <Area
-              dataKey="Request"
-              type="natural"
-              fill="url(#fillDesktop)"
+            <Tooltip
+              cursor={{
+                stroke: "gray",
+                strokeWidth: 1,
+                strokeDasharray: "5 5",
+              }}
+              content={<ChartTooltipContent indicator="line" />}
+              labelFormatter={(time) => {
+                // For 30d, display full date in tooltip
+                if (selectedValue === "30d") {
+                  return new Date(time).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  });
+                }
+                return time;
+              }}
+            />
+            <Line
+              dataKey="request"
+              type="monotone"
+              strokeWidth={2}
+              stroke="var(--color-request)"
               fillOpacity={0.4}
-              stroke="var(--color-Request)"
-              stackId="a"
-              dot={{
-                fill: "var(--color-Request)",
-              }}
-              activeDot={{
-                r: 6,
-              }}
+              dot={false}
             />
-          </AreaChart>
+          </LineChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className='p-0'>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
-            </div>
-          </div>
+      <CardFooter className="flex-col items-start gap-2 text-sm p-0">
+        <div className="flex gap-2 font-medium leading-none">
+          {changeText}
+          {percentageChange === 0 ? (
+            "" 
+          ) : isUp ? (
+            <TrendingUp className="h-4 w-4" />
+          ) : (
+            <TrendingDown className="h-4 w-4" />
+          )}
+        </div>
+        <div className="leading-none text-muted-foreground">
+          Today's listing request: {todaysRequestCount}
         </div>
       </CardFooter>
     </Card>

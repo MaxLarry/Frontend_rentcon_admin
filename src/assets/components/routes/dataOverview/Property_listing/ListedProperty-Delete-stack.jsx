@@ -50,7 +50,7 @@ function ListedPropertyRemove() {
   return (
     <Card className="rounded-md shadow-md block items-center col-start-1 col-end-7 noselect">
       <CardHeader>
-        <h2 className="card-title">Bar Chart - Stacked Removed vs Listed</h2>
+        <h2 className="card-title">Stacked Removed vs Listed</h2>
         <p className="card-description">January - June 2024</p>
       </CardHeader>
       <CardContent>

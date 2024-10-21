@@ -32,10 +32,13 @@ function AveragePrice() {
 
         if (response.data && response.data.length > 0) {
           // Assuming backend returns an array of propertyType, averagePrice, and totalProperties
-          const mappedData = response.data.map(item => ({
-            category: item.propertyType, 
-            averagePrice: item.averagePrice, 
-            fill: item.propertyType === "Boarding House" ? "var(--color-boardingHouse)" : "var(--color-apartment)"
+          const mappedData = response.data.map((item) => ({
+            category: item.propertyType,
+            averagePrice: item.averagePrice,
+            fill:
+              item.propertyType === "Boarding House"
+                ? "var(--color-boardingHouse)"
+                : "var(--color-apartment)",
           }));
 
           setChartData(mappedData);
@@ -110,12 +113,10 @@ function AveragePrice() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Average Prices up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-center text-muted-foreground">
+        <div className="flex text-center items-center  gap-2 font-medium leading-none">
           Showing average prices for Boarding Houses and Apartments
         </div>
+        <div className="leading-none text-center text-muted-foreground"></div>
       </CardFooter>
     </Card>
   );

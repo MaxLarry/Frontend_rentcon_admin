@@ -75,8 +75,8 @@ function PropertylistingStatus() {
           setChartData([]);
         }
       } catch (error) {
-        console.error("Error fetching newly registered users:", error);
-        setError("Failed to fetch Newly Register data");
+        console.error("Error fetching PAR satatus :", error);
+        setError("Failed to fetch PAR data");
         setChartData([]);
       } finally {
         setLoading(false);
@@ -158,6 +158,7 @@ function PropertylistingStatus() {
             </defs>
             <Area
               dataKey="rejected"
+              type="monotone"
               fill="url(#fillRejected)"
               fillOpacity={0.4}
               stroke="var(--color-rejected)"
@@ -171,6 +172,7 @@ function PropertylistingStatus() {
             />
             <Area
               dataKey="request"
+              type="monotone"
               fill="url(#fillRequest)"
               fillOpacity={0.4}
               stroke="var(--color-request)"
@@ -184,6 +186,7 @@ function PropertylistingStatus() {
             />
             <Area
               dataKey="approved"
+              type="monotone"
               fill="url(#fillApproved)"
               fillOpacity={0.4}
               stroke="var(--color-approved)"
@@ -198,18 +201,7 @@ function PropertylistingStatus() {
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="p-0">
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
-            </div>
-          </div>
-        </div>
-      </CardFooter>
+
     </Card>
   );
 }

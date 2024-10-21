@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { FaUserCircle } from "react-icons/fa";
 import { MdManageAccounts } from "react-icons/md";
 import { HiLogout } from "react-icons/hi";
@@ -18,7 +19,14 @@ import {
 const ProfileDropdown = () => {
   const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
+  const handleMyProfClick = () => {
+    navigate("/settings?tab=My%20Profile"); // Navigate to My Profile
+  };
+  const handleAccSettingClick = () => {
+    navigate("/settings?tab=Account%20Settings"); // Navigate to Account Setting
+  };
   return (
     <DropdownMenu onOpenChange={(open) => setIsOpen(open)}>
       <DropdownMenuTrigger asChild>
@@ -33,7 +41,8 @@ const ProfileDropdown = () => {
             )}
           </Avatar>
           <span className="flex-1 tracking-s font-medium text-sm">
-            {user?.name || ""}{/* This ensures the frontend loads without errors */}
+            {user?.name || ""}
+            {/* This ensures the frontend loads without errors */}
           </span>
           <FiChevronDown
             className={`text-xl transform transition-transform ${
@@ -46,11 +55,11 @@ const ProfileDropdown = () => {
       <DropdownMenuContent className="w-52">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleMyProfClick}>
           <TiUser className="mr-2" />
           My Profile
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleAccSettingClick}>
           <MdManageAccounts className="mr-2" />
           Account Setting
         </DropdownMenuItem>

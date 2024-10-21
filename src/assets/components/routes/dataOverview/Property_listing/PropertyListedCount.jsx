@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp,TrendingDown } from "lucide-react";
 import { Label, Pie, PieChart } from "recharts";
 
 import {
@@ -18,11 +18,12 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-
 function PropertyListedCount() {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [percentageChange, setPercentageChange] = useState(null);
+
   useEffect(() => {
     const fetchListedPropertiesCount = async () => {
       setLoading(true);
@@ -30,10 +31,14 @@ function PropertyListedCount() {
       try {
         const response = await axios.get("/data/property-count");
 
-        if (response.data && response.data.length > 0) {
-          const boardingHouseCount = response.data.find(item => item.type === 'Boarding House')?.count || 0;
-          const apartmentCount = response.data.find(item => item.type === 'Apartment')?.count || 0;
-
+        if (response.data && response.data.countByType.length > 0) {
+          const boardingHouseCount =
+            response.data.countByType.find((item) => item.type === "Boarding House")
+              ?.count || 0;
+          const apartmentCount =
+            response.data.countByType.find((item) => item.type === "Apartment")?.count || 0;
+          const percentageChange = response.data.percentageChange;
+          setPercentageChange(percentageChange);
           setChartData([
             {
               category: "Boarding House",
@@ -50,7 +55,10 @@ function PropertyListedCount() {
           setChartData([]);
         }
       } catch (error) {
-        console.error("There was an error fetching the listed Properties Count!", error);
+        console.error(
+          "There was an error fetching the listed Properties Count!",
+          error
+        );
         setError("Failed to fetch Properties Count");
         setChartData([]);
       } finally {
@@ -85,6 +93,17 @@ function PropertyListedCount() {
       color: "hsl(var(--chart-2))",
     },
   };
+  const isUp = percentageChange > 0;
+  const changeText =
+    percentageChange === 0
+      ? `Listed Property percentage is unchanged this month`
+      : isUp
+      ? `Listed Property is up by ${Math.abs(percentageChange).toFixed(
+          1
+        )}% this month`
+      : `Listed Property is down by ${Math.abs(percentageChange).toFixed(
+          1
+        )}% this month`;
 
   return (
     <Card className="rounded-md shadow-md block items-center col-start-1 col-end-4 noselect">
@@ -147,7 +166,14 @@ function PropertyListedCount() {
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
         <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          {changeText}
+          {percentageChange === 0 ? (
+            ""
+          ) : isUp ? (
+            <TrendingUp className="h-4 w-4" />
+          ) : (
+            <TrendingDown className="h-4 w-4" />
+          )}
         </div>
         <div className="leading-none text-muted-foreground">
           Showing the total of properties listed in the app

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import axios from "axios";
 import DropdownFilter from "../DropdownFilter";
 import {
@@ -35,6 +35,7 @@ function NewlyRegistered() {
   const [error, setError] = useState(null);
   const [selectedValue, setSelectedValue] = useState("30d");
   const [todaysRegisterCount, setTodaysRegisterCount] = useState(0);
+  const [percentageChange, setPercentageChange] = useState(null);
 
   const opt = [
     { value: "24h", label: "24h" },
@@ -54,13 +55,19 @@ function NewlyRegistered() {
           params: { timeframe: selectedValue },
         });
 
-        if (response.data && response.data.length > 0) {
+        if (
+          response.data &&
+          response.data.counts &&
+          response.data.counts.length > 0
+        ) {
           // Map response data to the chart structure
-          const formattedData = response.data.map((item) => ({
+          const formattedData = response.data.counts.map((item) => ({
             time: item.days || item.hours || item.date || item.month,
             userCount: item.count,
             fullDate: item.date, // Keeping the full date for tooltip
           }));
+          const percentageChange = response.data.percentageChange;
+          setPercentageChange(percentageChange);
 
           setChartData(formattedData);
         } else {
@@ -105,6 +112,18 @@ function NewlyRegistered() {
   if (error) {
     return <div>{error}</div>;
   }
+
+  const isUp = percentageChange > 0;
+  const changeText =
+    percentageChange === 0
+      ? `Listed Property percentage is unchanged this month`
+      : isUp
+      ? `Listed Property is up by ${Math.abs(percentageChange).toFixed(
+          1
+        )}% this month`
+      : `Listed Property is down by ${Math.abs(percentageChange).toFixed(
+          1
+        )}% this month`;
 
   return (
     <Card className="rounded-md shadow-md block items-center col-start-4 col-end-10 noselect">
@@ -192,8 +211,15 @@ function NewlyRegistered() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+      <div className="flex items-center gap-2 font-medium leading-none">
+          {changeText}
+          {percentageChange === 0 ? (
+            ""
+          ) : isUp ? (
+            <TrendingUp className="h-4 w-4" />
+          ) : (
+            <TrendingDown className="h-4 w-4" />
+          )}
         </div>
         <div className="leading-none text-muted-foreground">
           Today's registered users: {todaysRegisterCount}
