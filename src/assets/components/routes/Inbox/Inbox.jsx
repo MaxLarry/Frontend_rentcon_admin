@@ -3,6 +3,7 @@ import axios from "axios";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SearchInput } from "@/components/ui/input";
 import { HiMiniPencilSquare } from "react-icons/hi2";
+import ChatInput from "./ChatInput";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -47,7 +48,18 @@ function Inbox() {
   // if (loading) {
   //   return <div>Loading...</div>;
   // }
+  const handleSendMessage = (newMessage) => {
+    const newId = messages.length + 1;
+    const newMessageObject = {
+      id: newId,
+      name: "You",
+      text: newMessage,
+      time: new Date().toLocaleTimeString(),
+      timestamp: Date.now(),
+    };
 
+    setMessages((prevMessages) => [...prevMessages, newMessageObject]);
+  };
   return (
     <ScrollArea className="pt-14 h-full lg:ml-60 block gap-2 flex-col lg:flex-row translate-all duration-300">
       <div className="px-4 pb-4" style={{ minWidth: "1200px" }}>
@@ -96,7 +108,17 @@ function Inbox() {
               </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
-            <ResizablePanel></ResizablePanel>
+            <ResizablePanel className="flex flex-col justify-between">
+              {/* Here you can display a detailed view of a selected message */}
+              <div className="p-4">
+                <h2 className="font-bold text-lg">Message Composer</h2>
+                <p className="text-sm">Compose a new message or reply to a message.</p>
+              </div>
+              {/* Place the chat input here */}
+              <div className="p-4">
+                <ChatInput onSendMessage={handleSendMessage} />
+              </div>
+            </ResizablePanel>
           </ResizablePanelGroup>
         </div>
       </div>

@@ -125,3 +125,35 @@ input:disabled {
     @apply bg-background text-foreground;
   }
 }
+
+/* print-styles.css */
+@media print {
+  /* Define A4 page size */
+  @page {
+    size: A4;
+    margin: 20mm;
+  }
+
+  .page {
+    page-break-before: always;
+    page-break-after: avoid;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+  }
+  .page:last-child {
+    page-break-after: auto;
+  }
+
+  body, html {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm;
+    height: auto;
+  }
+
+  .content {
+    padding: 5px;
+    font-size: 14px;
+  }
+}

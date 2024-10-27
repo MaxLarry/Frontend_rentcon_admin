@@ -11,6 +11,7 @@ import {
   LineChart,
   XAxis,
   Tooltip,
+  LabelList
 } from "recharts";
 import {
   Card,
@@ -29,7 +30,7 @@ const chartConfig = {
   },
 };
 
-function NewlyRegistered() {
+function NewlyRegistered({onRegisterUpdate}) {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -37,13 +38,6 @@ function NewlyRegistered() {
   const [todaysRegisterCount, setTodaysRegisterCount] = useState(0);
   const [percentageChange, setPercentageChange] = useState(null);
 
-  const opt = [
-    { value: "24h", label: "24h" },
-    { value: "30d", label: "30d" },
-    { value: "90d", label: "90d" },
-    { value: "1y", label: "1y" },
-    { value: "all", label: "All time" },
-  ];
 
   useEffect(() => {
     const fetchNewRegister = async () => {
@@ -66,10 +60,16 @@ function NewlyRegistered() {
             userCount: item.count,
             fullDate: item.date, // Keeping the full date for tooltip
           }));
-          const percentageChange = response.data.percentageChange;
-          setPercentageChange(percentageChange);
 
           setChartData(formattedData);
+          const totalNewReg30day = response.data.totalCurrent30Days;
+          const percentageChange = response.data.percentageChange;
+          setPercentageChange(percentageChange);
+          onRegisterUpdate({
+            totalNewReg30day:totalNewReg30day,
+            percentageChange:percentageChange,
+          });
+          
         } else {
           setChartData([]);
         }
@@ -98,16 +98,10 @@ function NewlyRegistered() {
 
     fetchNewRegister();
     fetchTodaysRegisterCount();
-  }, [selectedValue]); // Re-fetch when selected timeframe changes
+  }, [selectedValue, onRegisterUpdate]); // Re-fetch when selected timeframe changes
 
   
-  const totalUser = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.userCount, 0);
-  }, [chartData]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
     return <div>{error}</div>;
@@ -126,26 +120,17 @@ function NewlyRegistered() {
         )}% this month`;
 
   return (
-    <Card className="rounded-md shadow-md block items-center col-start-4 col-end-10 noselect">
-      <CardHeader className="flex flex-row justify-between pb-6">
-        <div>
-          <CardTitle className="text-xl font-bold">Newly Registered Users</CardTitle>
-          <CardDescription >
+    <Card className="rounded-md shadow-md block items-center col-start-4 col-end-10 noselect h-80">
+      <CardHeader style={{ paddingBottom: '0' }}>
+          <CardTitle className="text-sm font-bold">Newly Registered Users</CardTitle>
+          <CardDescription className="text-xs">
             Showing user registrations over {selectedValue}
           </CardDescription>
-        </div>
-        <div>
-          <DropdownFilter
-            options={opt}
-            selectedValue={selectedValue}
-            setSelectedValue={setSelectedValue}
-          />
-        </div>
       </CardHeader>
       <CardContent>
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="aspect-auto h-[290px] w-full"
         >
           <LineChart
             accessibilityLayer
@@ -206,12 +191,16 @@ function NewlyRegistered() {
               stroke= "var(--color-register)"
               fillOpacity={0.4}
               dot= {false}
-            />
+            ><LabelList     dataKey="userCount"
+            position="top"
+            offset={12}
+            fill="black" // Ensure the text color is set to black
+            fontSize={12}/></Line>
           </LineChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-      <div className="flex items-center gap-2 font-medium leading-none">
+      {/* <div className="flex items-center gap-2 font-medium leading-none">
           {changeText}
           {percentageChange === 0 ? (
             ""
@@ -223,7 +212,7 @@ function NewlyRegistered() {
         </div>
         <div className="leading-none text-muted-foreground">
           Today's registered users: {todaysRegisterCount}
-        </div>
+        </div> */}
       </CardFooter>
     </Card>
   );
