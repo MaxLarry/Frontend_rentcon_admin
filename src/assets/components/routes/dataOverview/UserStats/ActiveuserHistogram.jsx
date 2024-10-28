@@ -1,8 +1,9 @@
 import * as React from "react";
 import { useState } from "react";
 import { TrendingUp } from "lucide-react";
+import { format } from "date-fns";
 import axios from "axios";
-import DropdownFilter from "../DropdownFilter";
+import FilterMonth from "../Filtering";''
 import {
   CartesianGrid,
   Bar,
@@ -68,26 +69,19 @@ const chartConfig = {
 };
 
 function ActiveuserHistogram() {
-  const [selectedValue, setSelectedValue] = useState("30d");
-  const opt = [
-    { value: "24h", label: "24h" },
-    { value: "7d", label: "7d" },
-    { value: "90d", label: "90d" },
-    { value: "1y", label: "1y" },
-    { value: "all", label: "All time" },
-  ];
-
-
+  const currentYear = format(new Date(), "yyyy");
+  const currentMonth = format(new Date(), "MMMM").toLowerCase(); // Convert to lowercase for consistency with SelectItem values
+  const [selectedValue, setSelectedValue] = useState({ year: currentYear, month: currentMonth });
+  
   return (
     <Card className="rounded-md shadow-md block items-center col-start-1 col-end-10 noselect">
       <CardHeader className="flex flex-row justify-between pb-6">
         <div>
           <CardTitle className="text-xl font-bold">Active User</CardTitle>
-          <CardDescription>January - June 2024</CardDescription>
-          </div>
-          <div>
-          <DropdownFilter
-            options={opt}
+          <CardDescription>Showing the numbers of user login activity</CardDescription>
+        </div>
+        <div>
+          <FilterMonth
             selectedValue={selectedValue}
             setSelectedValue={setSelectedValue}
           />
@@ -119,12 +113,12 @@ function ActiveuserHistogram() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
+        {/* <div className="flex gap-2 font-medium leading-none">
           Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
         </div>
         <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
+          Showing total
+        </div> */}
       </CardFooter>
     </Card>
   );

@@ -91,7 +91,7 @@ function AveragePrice() {
           <PieChart>
           <ChartLegend
           nameKey="category"
-            />
+            /> 
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}

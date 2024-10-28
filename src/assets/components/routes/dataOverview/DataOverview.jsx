@@ -8,6 +8,7 @@ import { Printer } from "lucide-react";
 import PrintableContent from "./PrintableContent";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
+import TopMostVisited from "@/assets/components/routes/dataOverview/Property_listing/TopMostVisited"
 import {
   Dialog,
   DialogContent,
@@ -56,13 +57,14 @@ function DataOverview() {
           <div className="max-w-full mx-auto">
             <UserStats />
             <PropertyStats />
+            <TopMostVisited/>
           </div>
         </div>      
- <PrintableContent  ref={printRef}/>
+ 
       </ScrollArea>
 
         {/* Render PrintableContent with ref */}
-     
+     {/* <PrintableContent  ref={printRef}/> */}
 
       {/* Print Confirmation Dialog */}
       <Dialog open={showPrintModal} onOpenChange={setShowPrintModal}>

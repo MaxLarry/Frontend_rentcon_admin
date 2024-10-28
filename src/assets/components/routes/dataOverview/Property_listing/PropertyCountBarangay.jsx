@@ -72,7 +72,7 @@ function PropertyCountBarangay() {
     <Card className="rounded-md shadow-md block items-center col-start-1 col-end-10 noselect">
       <CardHeader>
         <CardTitle className="text-xl font-bold">Number of Listed Properties per Barangay</CardTitle>
-        <CardDescription >January - June 2024</CardDescription>
+        <CardDescription >Showing the number of properties and their types by Barangay</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer
@@ -127,9 +127,6 @@ function PropertyCountBarangay() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
       </CardFooter>
     </Card>
   );

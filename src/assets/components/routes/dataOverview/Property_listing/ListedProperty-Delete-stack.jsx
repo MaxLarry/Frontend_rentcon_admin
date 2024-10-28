@@ -1,5 +1,4 @@
-"use client";
-
+import { useState } from "react";
 import { TrendingUp } from "lucide-react";
 import {
   Bar,
@@ -22,23 +21,32 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const chartData = [
-  { month: "January", removed: 186, listed: 80 },
-  { month: "February", removed: 305, listed: 200 },
-  { month: "March", removed: 237, listed: 120 },
-  { month: "April", removed: 73, listed: 190 },
-  { month: "May", removed: 209, listed: 130 },
-  { month: "June", removed: 214, listed: 140 },
+  { month: "January", occupancy: 75, vacancy: 25 },
+  { month: "February", occupancy: 80, vacancy: 20 },
+  { month: "March", occupancy: 70, vacancy: 30 },
+  { month: "April", occupancy: 85, vacancy: 15 },
+  { month: "May", occupancy: 65, vacancy: 35 },
+  { month: "June", occupancy: 90, vacancy: 10 },
 ];
 
 const chartConfig = {
-  removed: {
-    label: "Removed",
+  occupancy: {
+    label: "Occupancy Rate",
     color: "hsl(var(--chart-1))",
   },
-  listed: {
-    label: "Listed",
+  vacancy: {
+    label: "Vacancy Rate",
     color: "hsl(var(--chart-2))",
   },
   label: {
@@ -46,75 +54,113 @@ const chartConfig = {
   },
 };
 
-function ListedPropertyRemove() {
+function OccupancyVacancyChart() {
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const currentYear = new Date().getFullYear();
+  const years = Array.from(
+    { length: currentYear - 2024 + 1 },
+    (_, i) => 2024 + i
+  );
+
+  const handleYearChange = (year) => {
+    setSelectedYear(year);
+    // Optionally: fetch data based on the selected year
+  };
+
   return (
     <Card className="rounded-md shadow-md block items-center col-start-1 col-end-7 noselect">
-      <CardHeader>
-        <h2 className="card-title">Stacked Removed vs Listed</h2>
-        <p className="card-description">January - June 2024</p>
+      <CardHeader className="flex flex-row justify-between pb-6">
+        <div>
+          <CardTitle className="text-xl font-bold">
+            Occupancy Rate vs Vacancy Rate
+          </CardTitle>
+          <CardDescription>
+            Showing occupancy and vacancy rates for {selectedYear}
+          </CardDescription>
+        </div>
+        <div>
+          <Select onValueChange={handleYearChange} value={selectedYear.toString()}>
+            <SelectTrigger className="w-[150px] mt-2">
+              <SelectValue placeholder="Select Year" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Years</SelectLabel>
+                {years.map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}
-        className="aspect-auto h-[250px] w-full">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-[250px] w-full"
+        >
           <BarChart
-            accessibilityLayer
             data={chartData}
-            layout="vertical"
+            layout="horizontal"
             margin={{
-              right: 29,
+              right: 30,
             }}
           >
-            <CartesianGrid horizontal={false} />
-            <YAxis
-              dataKey="month"
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
+            <XAxis
               type="category"
+              dataKey="month"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-              hide
             />
-            <XAxis dataKey="removed" type="number" hide />
+            <YAxis
+              type="number"
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `${value}%`}
+            />
             <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
+            cursor={{ fill: "rgba(0, 0, 0, 0.1)" }}
+            content={<ChartTooltipContent indicator="line" />}
             />
             <Bar
-              dataKey="removed"
-              stackId="a"
-              layout="vertical"
-              fill="var(--color-removed)"
-              radius={[4, 0, 0, 4]}
+              dataKey="occupancy"
+              name="Occupancy Rate"
+              fill="var(--color-occupancy)"
+              radius={[4, 4, 0, 0]}
             >
               <LabelList
-                dataKey="month"
-                position="insideLeft"
-                offset={8}
+                dataKey="occupancy"
+                position="top"
                 className="fill-[--color-label]"
                 fontSize={12}
+                formatter={(value) => `${value}%`}
               />
             </Bar>
             <Bar
-              dataKey="listed"
-              stackId="a"
-              layout="vertical"
-              fill="var(--color-listed)"
-              radius={[0, 4, 4, 0]}
+              dataKey="vacancy"
+              name="Vacancy Rate"
+              fill="var(--color-vacancy)"
+              radius={[4, 4, 0, 0]}
             >
+              <LabelList
+                dataKey="vacancy"
+                position="top"
+                className="fill-[--color-label]"
+                fontSize={12}
+                formatter={(value) => `${value}%`}
+              />
             </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className=" flex-col items-start gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total removed and listed properties for the last 6 months
-        </div>
+      <CardFooter className="flex-col items-start gap-2 text-sm">
       </CardFooter>
     </Card>
   );
 }
 
-export default ListedPropertyRemove;
+export default OccupancyVacancyChart;
