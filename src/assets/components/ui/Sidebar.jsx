@@ -4,11 +4,14 @@ import { links, support } from "../../constants";
 import LinkItem from "./LinkItem";
 import { RiMoonFill } from "react-icons/ri";
 import { useTheme } from "@/components/ui/theme-provider"; // Import useTheme hook
+import {roles} from "../../constants"; // Import roles object
+import useAuth from '../auth/useAuth';
 
 const Sidebar = ({ isSidebarOpen }) => {
   const { theme, setTheme } = useTheme(); // Use theme and setTheme from useTheme hook
   const [activeLink, setActiveLink] = useState("");
   const location = useLocation();
+  const { user } = useAuth();
 
   useEffect(() => {
     const path = location.pathname;
@@ -41,6 +44,11 @@ const Sidebar = ({ isSidebarOpen }) => {
     }
   }, [location]);
 
+  const allowedPaths = roles[user?.role] || [];
+
+  // Filter links based on allowed paths
+  const filteredLinks = links.filter(link => allowedPaths.includes(link.to));
+
   // Toggle between light and dark themes
   const toggleDarkMode = () => {
     setTheme(theme === "light" ? "dark" : "light");
@@ -55,7 +63,7 @@ const Sidebar = ({ isSidebarOpen }) => {
       <div className="h-full px-5 pb-4 overflow-y-auto">
         <h2 className="font-light pb-2 px-3 text-gray-500 text-sm">MENU</h2>
         <ul className="space-y-2 text-sm font-normal">
-          {links.map((item, index) => (
+        {filteredLinks.map((item, index) => (
             <LinkItem
               key={index}
               {...item}

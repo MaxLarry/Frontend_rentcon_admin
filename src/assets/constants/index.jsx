@@ -64,3 +64,19 @@ export const REVIEW_ISSUES = [
     'Poor Quality Photos',
     'Ownership Verification Issues'
 ];
+
+export const roles = {
+    'Listing Manager': ['/dashboard', '/listing-management', '/inbox', '/activity-logs','/settings'],
+    'User Manager': ['/dashboard', '/user-management', '/inbox', '/activity-logs', '/settings'],
+    'Super-Admin': [
+      '/dashboard',
+      '/listing-management',
+      '/activity-logs',
+      '/user-management',
+      '/compliance-safety',
+      '/data-overview',
+      '/inbox',
+      '/settings'
+    ],
+    Admin: ['/dashboard', '/user-management', '/data-overview'] // Example role
+  };
