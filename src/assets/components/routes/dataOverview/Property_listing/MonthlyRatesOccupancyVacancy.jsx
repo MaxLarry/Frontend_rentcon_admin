@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TrendingUp } from "lucide-react";
+import axios from "axios";
 import {
   Bar,
   BarChart,
@@ -31,14 +32,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const chartData = [
-  { month: "January", occupancy: 75, vacancy: 25 },
-  { month: "February", occupancy: 80, vacancy: 20 },
-  { month: "March", occupancy: 70, vacancy: 30 },
-  { month: "April", occupancy: 85, vacancy: 15 },
-  { month: "May", occupancy: 65, vacancy: 35 },
-  { month: "June", occupancy: 90, vacancy: 10 },
-];
 
 const chartConfig = {
   occupancy: {
@@ -55,6 +48,9 @@ const chartConfig = {
 };
 
 function OccupancyVacancyChart() {
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const currentYear = new Date().getFullYear();
   const years = Array.from(
@@ -66,6 +62,48 @@ function OccupancyVacancyChart() {
     setSelectedYear(year);
     // Optionally: fetch data based on the selected year
   };
+
+  useEffect(() => {
+    const fetchMonthlyRates = async () => {
+      setLoading(true);
+  
+      try {
+        // Fetching data from your backend with the selected year
+        const response = await axios.get(`/data/monthly-rates`, {
+          params: { year: selectedYear }, // Change 'timeframe' to 'year' to match your API
+        });
+  
+        if (response.data && response.data.length > 0) {
+          // Format the data for charting
+          const formattedData = response.data.map((item) => ({
+            month: item.month,
+            vacancyRate: item.vacancyRate,
+            occupancyRate: item.occupancyRate,
+          }));
+  
+          setChartData(formattedData);
+        } else {
+          setChartData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching Monthly Rates:", error);
+        setError("Failed to fetch Monthly Rates");
+        setChartData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchMonthlyRates();
+  }, [selectedYear]);
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <Card className="rounded-md shadow-md block items-center col-start-1 col-end-7 noselect">
@@ -106,6 +144,7 @@ function OccupancyVacancyChart() {
             layout="horizontal"
             margin={{
               right: 30,
+              top:10,
             }}
           >
             <CartesianGrid vertical={false} strokeDasharray="3 3" />
@@ -127,13 +166,13 @@ function OccupancyVacancyChart() {
             content={<ChartTooltipContent indicator="line" />}
             />
             <Bar
-              dataKey="occupancy"
+              dataKey="occupancyRate"
               name="Occupancy Rate"
               fill="var(--color-occupancy)"
               radius={[4, 4, 0, 0]}
             >
               <LabelList
-                dataKey="occupancy"
+                dataKey="occupancyRate"
                 position="top"
                 className="fill-[--color-label]"
                 fontSize={12}
@@ -141,13 +180,13 @@ function OccupancyVacancyChart() {
               />
             </Bar>
             <Bar
-              dataKey="vacancy"
+              dataKey="vacancyRate"
               name="Vacancy Rate"
               fill="var(--color-vacancy)"
               radius={[4, 4, 0, 0]}
             >
               <LabelList
-                dataKey="vacancy"
+                dataKey="vacancyRate"
                 position="top"
                 className="fill-[--color-label]"
                 fontSize={12}

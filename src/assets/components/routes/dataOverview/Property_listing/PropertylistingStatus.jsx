@@ -18,10 +18,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-export const description = "A stacked area chart with gradient fill";
-
-
-
 function PropertylistingStatus() {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);

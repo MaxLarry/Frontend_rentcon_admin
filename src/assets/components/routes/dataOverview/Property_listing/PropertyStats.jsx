@@ -3,7 +3,7 @@ import UserCount from "./PropertyListedCount";
 import PropertylistingStatus from "./PropertylistingStatus"
 import PropertyCountBarangay from "./PropertyCountBarangay";
 import PropertyListedCount from "./PropertyListedCount";
-import ListedPropertyRemove from "./ListedProperty-Delete-stack";
+import ListedPropertyRemove from "./MonthlyRatesOccupancyVacancy";
 import AveragePrice from "./AveragePrice";
 
 function UserStats() {
