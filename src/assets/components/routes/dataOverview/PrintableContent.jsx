@@ -7,8 +7,9 @@ import ActiveuserHistogram from "./printable/ActiveuserHistogram";
 import PropertylistingStatus from "./printable/PropertylistingStatus"
 import PropertyCountBarangay from "./printable/PropertyCountBarangay";
 import PropertyListedCount from "./printable/PropertyListedCount";
-import ListedPropertyRemove from "./printable/ListedProperty-Delete-stack";
+import MonthlyRate from "./printable/MonthlyRatesOccupancyVacancy";
 import AveragePrice from "./printable/AveragePrice";
+import TopMostVisited from "./printable/TopMostVisited";
 
 const PrintableContent = React.forwardRef((props, ref) => {
   // State to hold user count data
@@ -83,10 +84,10 @@ const PrintableContent = React.forwardRef((props, ref) => {
         <div className="col-start-1 col-end-10 h-80 justify-center">
             <p>{REPORT_SUMMARY}</p>
           </div>
-        <ListedPropertyRemove/>
+        <MonthlyRate/>
         <AveragePrice/>
         <PropertyCountBarangay/>
-        
+          <TopMostVisited/>
         </div>
       </div>
     </div>

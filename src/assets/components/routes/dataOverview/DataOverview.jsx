@@ -8,7 +8,7 @@ import { Printer } from "lucide-react";
 import PrintableContent from "./PrintableContent";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
-import TopMostVisited from "@/assets/components/routes/dataOverview/Property_listing/TopMostVisited"
+import TopMostVisited from "@/assets/components/routes/dataOverview/Property_listing/TopMostVisited";
 import {
   Dialog,
   DialogContent,
@@ -32,11 +32,11 @@ function DataOverview() {
 
   const handlePrintAction = useReactToPrint({
     content: () => printRef.current,
-    contentRef: printRef, 
+    contentRef: printRef,
     documentTitle: "Data Overview Report",
     onAfterPrint: () => setShowPrintModal(false),
   });
-   console.log(printRef.current); // This should not be null
+  console.log(printRef.current); // This should not be null
 
   return (
     <>
@@ -51,20 +51,22 @@ function DataOverview() {
               </p>
             </div>
             <div className="mr-6">
-              <Button onClick={handlePrint} className="gap-1"><Printer className="w-4"/><p>Print Report</p></Button>
+              <Button onClick={handlePrint} className="gap-1">
+                <Printer className="w-4" />
+                <p>Print Report</p>
+              </Button>
             </div>
           </div>
           <div className="max-w-full mx-auto">
             <UserStats />
             <PropertyStats />
-            <TopMostVisited/>
+            <TopMostVisited />
           </div>
-        </div>      
- 
+        </div>
       </ScrollArea>
 
-        {/* Render PrintableContent with ref */}
-     {/* <PrintableContent  ref={printRef}/> */}
+      {/* Render PrintableContent with ref */}
+      <PrintableContent ref={printRef} />
 
       {/* Print Confirmation Dialog */}
       <Dialog open={showPrintModal} onOpenChange={setShowPrintModal}>

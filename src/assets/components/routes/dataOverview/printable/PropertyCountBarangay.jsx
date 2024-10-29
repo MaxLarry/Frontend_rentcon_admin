@@ -22,6 +22,8 @@ import {
   ChartContainer,
   ChartTooltipContent,
   ChartTooltip,
+  ChartLegend,
+  ChartLegendContent
 } from "@/components/ui/chart";
 
 export const description = "A stacked bar chart with labels";
@@ -71,8 +73,8 @@ function PropertyCountBarangay() {
   return (
     <Card className="rounded-md shadow-md block items-center col-start-1 col-end-10 noselect">
       <CardHeader>
-        <CardTitle className="text-sm font-bold">Number of Listed Properties per Barangay</CardTitle>
-        <CardDescription className="text-xs">January - June 2024</CardDescription>
+        <CardTitle className="text-xl font-bold">Number of Listed Properties per Barangay</CardTitle>
+        <CardDescription >Showing the number of properties and their types by Barangay</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer
@@ -123,13 +125,11 @@ function PropertyCountBarangay() {
                 fontSize={12}
               />
             </Bar>
+            <ChartLegend content={<ChartLegendContent/>}/>
           </BarChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col items-start gap-2 text-sm">
-        <div className="leading-none text-muted-foreground text-xs">
-          Showing total visitors for the last 6 months
-        </div>
       </CardFooter>
     </Card>
   );
