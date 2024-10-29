@@ -5,6 +5,13 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
+ 
 import {
   Form,
   FormControl,
@@ -49,6 +56,7 @@ const formSchema = z.object({
 export function AddAdminUser() {
   const [loading, setLoading] = useState(false); // State for showing the loader
   const [isOpen, setIsOpen] = useState(false); // State for dialog visibility
+  const [otpOpen, setOtpOpen] = useState(false); // State for OTP dialog visibility
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -98,6 +106,7 @@ export function AddAdminUser() {
   }
 
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="text-xs space-x-1" variant="outline">
@@ -233,6 +242,27 @@ export function AddAdminUser() {
         )}
       </DialogContent>
       <Toaster />
-    </Dialog>
+   </Dialog>
+      {/*  <Dialog open={otpOpen} onOpenChange={setOtpOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Enter OTP</DialogTitle>
+          <DialogDescription>
+            A code has been sent to your email. Please enter it below.
+          </DialogDescription>
+        </DialogHeader>
+        <InputOTP maxLength={6} pattern={REGEXP_ONLY_DIGITS_AND_CHARS} onComplete={handleOtpSubmit}>
+          <InputOTPGroup>
+            <InputOTPSlot index={0} />
+            <InputOTPSlot index={1} />
+            <InputOTPSlot index={2} />
+            <InputOTPSlot index={3} />
+            <InputOTPSlot index={4} />
+            <InputOTPSlot index={5} />
+          </InputOTPGroup>
+        </InputOTP>
+      </DialogContent>
+    </Dialog> */}
+    </>
   );
 }
