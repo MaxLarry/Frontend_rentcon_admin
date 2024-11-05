@@ -21,11 +21,11 @@ export const links = [
         icon: MdPeople,
         text: "User Management"
     },
-    {
-        to: "/compliance-safety",
-        icon: GrCompliance,
-        text: "Compliance & Safety"
-    },
+    // {
+    //     to: "/compliance-safety",
+    //     icon: GrCompliance,
+    //     text: "Compliance & Safety"
+    // },
     {
         to: "/data-overview",
         icon: FaChartPie,

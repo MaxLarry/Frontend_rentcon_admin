@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CopyableText from "../../ui/CopyableText";
+import useAuth from "../../auth/useAuth";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SearchInput } from "@/components/ui/input";
@@ -53,7 +54,10 @@ function ActivityLogs() {
   const [selectedLogs, setSelectedLogs] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [activityLogs, setActivityLogs] = useState([]);
-  
+  const { user } = useAuth();
+
+  const userCurrentRole = user ? user.role : null; 
+
   const { toast } = useToast();
 
   const logColumn = [
@@ -170,7 +174,14 @@ function ActivityLogs() {
     const fetchActivityLogs = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/logs/admin-activity-logs");
+        const params = {};
+        // Change || to && to correctly check the role
+        if (userCurrentRole !== "Admin" && userCurrentRole !== "Super-Admin") {
+          params.adminId = user ? user._id : null; // Add adminId to params
+        }
+        const response = await axios.get("/logs/admin-activity-logs", {
+          params: Object.keys(params).length > 0 ? params : null,
+        });
         setActivityLogs(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("There was an error fetching the Activity Logs!", error);
@@ -179,10 +190,10 @@ function ActivityLogs() {
         setLoading(false);
       }
     };
-
+  
     fetchActivityLogs();
-  }, []);
-
+  }, [userCurrentRole, user]); // Ensure dependencies include userCurrentRole and user
+  
   useEffect(() => {
     if (selectedLogs.length !== currentLogs.length) {
       setSelectAll(false);
@@ -217,25 +228,33 @@ function ActivityLogs() {
           />
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger>
-            <Button className="text-xs">{selectedRole || "All Roles"}</Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => handleRoleSelect("All Roles")}>
-              All Roles
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleRoleSelect("Super-Admin")}>
-              Super-Admin
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleRoleSelect("Admin")}>
-              Admin
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {userCurrentRole === "Admin" || userCurrentRole === "Super-Admin" ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="text-xs">{selectedRole || "All Roles"}</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => handleRoleSelect("All Roles")}>
+                All Roles
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleRoleSelect("Super-Admin")}>
+                Super-Admin
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleRoleSelect("Admin")}>
+                Admin
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleRoleSelect("Listing Manager")}>
+                Listing Manager
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleRoleSelect("User Manager")}>
+                User Manager
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : ""} 
 
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger asChild>
             <Button className="text-xs">
               {selectedAction || "All Actions"}
             </Button>

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { format } from "date-fns";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,74 +33,59 @@ const occupants_column = [
   "Property ID",
   "Room ID",
   "Leased Date",
-  "Date Register",
+  "Rented Date",
 ];
-
-const occupants = [
-  {
-    _id: "ocp1",
-    fullName: "John Doe",
-    email: "john.doe@example.com",
-    profilePicture: "",
-    propertyId: "prop1",
-    roomId: "room1",
-    leasedDate: "2024-01-15",
-    dateRegister: "2024-01-10",
-    created_at: "2024-01-10T08:30:00Z",
-  },
-  {
-    _id: "ocp2",
-    fullName: "Jane Smith",
-    email: "jane.smith@example.com",
-    profilePicture: "",
-    propertyId: "prop2",
-    roomId: "room2",
-    leasedDate: "2024-02-01",
-    dateRegister: "2024-01-25",
-    created_at: "2024-01-25T10:15:00Z",
-  },
-  {
-    _id: "ocp3",
-    fullName: "Michael Brown",
-    email: "michael.brown@example.com",
-    profilePicture: "",
-    propertyId: "prop3",
-    roomId: "room3",
-    leasedDate: "2024-03-05",
-    dateRegister: "2024-02-28",
-    created_at: "2024-02-28T14:45:00Z",
-  },
-  {
-    _id: "ocp4",
-    fullName: "Emily Davis",
-    email: "emily.davis@example.com",
-    profilePicture: "",
-    propertyId: "prop4",
-    roomId: "room4",
-    leasedDate: "2024-04-12",
-    dateRegister: "2024-04-05",
-    created_at: "2024-04-05T09:10:00Z",
-  },
-];
+const occupantnonuser_column = ["Name", "ID", "Property ID", "Room ID"];
 
 function ViewLandlordModal({ landlordToView, title, closeModal }) {
-  const [listOccupant, setListOccupant] = useState(occupants); // Assuming `occupants` is passed
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  const [occupantUsers, setOccupantUsers] = useState([]);
+  const [occupantsNonUsers, setOccupantsNonUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const filteredOccupant = listOccupant.sort((a, b) => {
-    // Sort by created_at in descending order (new to old)
-    return new Date(b.created_at) - new Date(a.created_at);
-  });
+  useEffect(() => {
+    const fetchOccupantList = async () => {
+      try {
+        const response = await axios.get(
+          `/user/occupants-list/${landlordToView._id}`
+        );
+        const users = [];
+        const nonUsers = [];
 
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredOccupant.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
-  const totalPages = Math.ceil(listOccupant.length / itemsPerPage);
+        // Separate occupants into user and non-user lists
+        response.data.forEach((property) => {
+          property.rooms.forEach((room) => {
+            if (room.occupantUser) {
+              users.push({
+                ...room.occupantUser,
+                propertyId: property.propertyId,
+                roomId: room.roomId,
+                rentedDate: room.rentedDate,
+              });
+            }
+            room.occupantsNonUser.forEach((nonUser) => {
+              nonUsers.push({
+                ...nonUser,
+                propertyId: property.propertyId,
+                roomId: room.roomId,
+              });
+            });
+          });
+        });
 
+        setOccupantUsers(users);
+        setOccupantsNonUsers(nonUsers);
+        setLoading(false);
+      } catch (error) {
+        console.error("There was an error fetching the Occupants List!", error);
+        setError("Failed to fetch Occupants List");
+        setLoading(false);
+      }
+    };
+
+    fetchOccupantList();
+  }, [landlordToView._id]);
+  console.log("ito ang user", occupantUsers);
   return (
     <Dialog open={true} onOpenChange={closeModal}>
       <DialogContent className="max-w-md md:max-w-2xl lg:max-w-3xl absolute p-6 rounded-lg shadow-lg">
@@ -207,123 +193,174 @@ function ViewLandlordModal({ landlordToView, title, closeModal }) {
                 )}
               </div>
             </div>
-            <div>
+            {/* Occupant Users Table */}
+            <div className="space-y-5">
               <h1>
-                <strong>Occupants: {listOccupant.length}</strong>
+                <strong>Occupant User: {occupantUsers.length}</strong>
               </h1>
-            </div>
-            <div className="flex justify-center overflow-x-auto">
-              <Table className="min-w-full dark:border-zinc-600">
-                <TableHeader>
-                  <TableRow className="border-b dark:border-zinc-600">
-                    {occupants_column.map((column, index) => (
-                      <TableHead
-                        key={index}
-                        className="text-zinc-900 dark:text-gray-200 font-bold"
-                      >
-                        {column}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {currentItems.length > 0 ? (
-                    currentItems.map((occupant) => (
-                      <TableRow key={occupant._id}>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <Avatar>
-                              {occupant?.profilePicture ? (
-                                <AvatarImage
-                                  src={occupant.profilePicture}
-                                  alt="occupant_photo"
-                                />
-                              ) : (
-                                <AvatarFallback>
-                                  <FaUserCircle className="text-9xl" />
-                                </AvatarFallback>
-                              )}
-                            </Avatar>
-                            <div className="p-2 flex flex-col">
-                              <span>{occupant?.fullName}</span>
-                              <span>{occupant?.email}</span>
+              <div className="flex justify-center overflow-x-auto">
+                <Table className="min-w-full dark:border-zinc-600">
+                  <TableHeader>
+                    <TableRow className="border-b dark:border-zinc-600">
+                      {occupants_column.map((column, index) => (
+                        <TableHead
+                          key={index}
+                          className="text-zinc-900 dark:text-gray-200 font-bold"
+                        >
+                          {column}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {occupantUsers.length > 0 ? (
+                      occupantUsers.map((occupant, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <Avatar>
+                                {occupant.profilePicture ? (
+                                  <AvatarImage
+                                    src={occupant.profilePicture}
+                                    alt="occupant_photo"
+                                  />
+                                ) : (
+                                  <AvatarFallback>
+                                    <FaUserCircle className="text-9xl" />
+                                  </AvatarFallback>
+                                )}
+                              </Avatar>
+                              <div className="p-2 flex flex-col">
+                                <span>{occupant.name}</span>
+                                <span>{occupant.email}</span>
+                              </div>
                             </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <CopyableText
-                            text={occupant._id}
-                            onCopy={() => setCopiedId(occupant._id)}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <CopyableText
-                            text={occupant.propertyId}
-                            onCopy={() => setCopiedId(occupant.propertyId)}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <CopyableText
-                            text={occupant.roomId}
-                            onCopy={() => setCopiedId(occupant.roomId)}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          {occupant?.leasedDate
-                            ? format(
-                                new Date(occupant.leasedDate),
-                                "MMMM dd, yyyy"
-                              )
-                            : "N/A"}
-                        </TableCell>
-                        <TableCell>
-                          {occupant?.dateRegister
-                            ? format(
-                                new Date(occupant.dateRegister),
-                                "MMMM dd, yyyy"
-                              )
-                            : "N/A"}
+                          </TableCell>
+                          <TableCell>
+                            {occupant.userId ? (
+                              <CopyableText
+                                text={occupant.userId}
+                                onCopy={() => setCopiedId(occupant.userId)}
+                              />
+                            ) : (
+                              "N/A"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {occupant.propertyId ? (
+                              <CopyableText
+                                text={occupant.propertyId}
+                                onCopy={() => setCopiedId(occupant.propertyId)}
+                              />
+                            ) : (
+                              "N/A"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {occupant.roomId ? (
+                              <CopyableText
+                                text={occupant.roomId}
+                                onCopy={() => setCopiedId(occupant.roomId)}
+                              />
+                            ) : (
+                              "N/A"
+                            )}
+                          </TableCell>
+                          <TableCell>N/A</TableCell>
+                          <TableCell>
+                            {occupant.rentedDate
+                              ? format(
+                                  new Date(occupant.rentedDate),
+                                  "MMMM dd, yyyy"
+                                )
+                              : "N/A"}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={occupants_column.length}
+                          className="text-center"
+                        >
+                          No Occupants Available
                         </TableCell>
                       </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={occupants_column.length + 1}
-                        className="text-center"
-                      >
-                        No Occupants Available
-                      </TableCell>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+              {/* Occupant Non-Users Table */}
+              <h1>
+                <strong>Occupant Non-User: {occupantsNonUsers.length}</strong>
+              </h1>
+              <div className="flex justify-center overflow-x-auto">
+                <Table className="min-w-full dark:border-zinc-600">
+                  <TableHeader>
+                    <TableRow className="border-b dark:border-zinc-600">
+                      {occupantnonuser_column.map((column, index) => (
+                        <TableHead
+                          key={index}
+                          className="text-zinc-900 dark:text-gray-200 font-bold"
+                        >
+                          {column}
+                        </TableHead>
+                      ))}
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {occupantsNonUsers.length > 0 ? (
+                      occupantsNonUsers.map((occupant, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{occupant.name}</TableCell>
+                          <TableCell>
+                            {occupant._id ? (
+                              <CopyableText
+                                text={occupant._id}
+                                onCopy={() => setCopiedId(occupant._id)}
+                              />
+                            ) : (
+                              "N/A"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {occupant.propertyId ? (
+                              <CopyableText
+                                text={occupant.propertyId}
+                                onCopy={() => setCopiedId(occupant.propertyId)}
+                              />
+                            ) : (
+                              "N/A"
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {occupant.roomId ? (
+                              <CopyableText
+                                text={occupant.roomId}
+                                onCopy={() => setCopiedId(occupant.roomId)}
+                              />
+                            ) : (
+                              "N/A"
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell
+                          colSpan={occupants_column.length + 1}
+                          className="text-center"
+                        >
+                          No Occupants Available
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
           </div>
         </ScrollArea>
-
-        {totalPages > 1 && (
-          <div className="flex justify-between">
-            <Button
-              variant="secondary"
-              onClick={() => setCurrentPage(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Prev
-            </Button>
-            <p>
-              Page {currentPage} of {totalPages}
-            </p>
-            <Button
-              variant="secondary"
-              onClick={() => setCurrentPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </Button>
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );

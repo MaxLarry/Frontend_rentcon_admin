@@ -24,6 +24,8 @@ function ActivityLog() {
   const [loading, setLoading] = useState(true);
   const [activityLogs, setActivityLogs] = useState([]);
 
+  const userCurrentRole = user ? user.role : null; 
+
   const logColumn = [
     "Log ID",
     "Admin Name",
@@ -55,7 +57,14 @@ function ActivityLog() {
     const fetchActivityLogs = async () => {
       setLoading(true);
       try {
-        const response = await axios.get("/logs/admin-activity-logs");
+        const params = {};
+        // Change || to && to correctly check the role
+        if (userCurrentRole !== "Admin" && userCurrentRole !== "Super-Admin") {
+          params.adminId = user ? user._id : null; // Add adminId to params
+        }
+        const response = await axios.get("/logs/admin-activity-logs", {
+          params: Object.keys(params).length > 0 ? params : null,
+        });
         setActivityLogs(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error("There was an error fetching the Activity Logs!", error);
@@ -64,10 +73,10 @@ function ActivityLog() {
         setLoading(false);
       }
     };
-
+  
     fetchActivityLogs();
-  }, []);
-
+  }, [userCurrentRole, user]); // Ensure dependencies include userCurrentRole and user
+  
   if (loading) {
     return <div>Loading...</div>;
   }
