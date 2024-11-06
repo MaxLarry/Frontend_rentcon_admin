@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { TrendingUp } from "lucide-react";
 import axios from "axios";
 import { Area, AreaChart, CartesianGrid,Tooltip, XAxis } from "recharts";
-import DropdownFilter from "../DropdownFilter";
 import {
   Card,
   CardContent,
