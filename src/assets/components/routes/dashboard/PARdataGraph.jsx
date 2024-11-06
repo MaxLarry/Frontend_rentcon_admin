@@ -92,7 +92,7 @@ function PropertylistingStatus() {
   }
   
   return (
-    <Card className="px-10 py-8 rounded-md shadow-md h-full block items-center lg:col-start-4 lg:col-end-7 lg:row-start-4 lg:row-end-6 md:col-start-1 md:col-end-3 relative">
+    <Card className="px-10 py-8 rounded-md shadow-md h-full block items-center col-start-4 col-end-7 row-start-4 row-end-6 relative">
       <CardHeader className="flex flex-row justify-between p-0 pb-6">
         <div>
         <CardTitle className="text-xl font-bold">Property Listing Status Overview</CardTitle>

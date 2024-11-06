@@ -108,7 +108,7 @@ function PropertyListedCount() {
         )}% this month`;
 
   return (
-    <Card className="px-10 py-5 rounded-md shadow-md block items-center lg:col-start-4 lg:col-end-7  md:col-start-1 md:col-end-3 relative no-select">
+    <Card className="px-10 py-5 rounded-md shadow-md block items-center col-start-4 col-end-7 relative no-select">
       <CardHeader className="items-center pb-0">
         <CardTitle className="text-xl font-bold">Listed Property</CardTitle>
         <CardDescription>Current Total of Listed Properties</CardDescription>

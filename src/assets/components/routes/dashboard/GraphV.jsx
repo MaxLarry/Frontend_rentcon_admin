@@ -116,7 +116,7 @@ function GraphV() {
         )}% this month`;
 
   return (
-    <Card className="px-10 py-8 rounded-md shadow-md block items-center lg:col-start-4 lg:col-end-7 lg:row-start-1 lg:row-end-3 md:col-start-1 md:col-end-3 relative">
+    <Card className="px-10 py-8 rounded-md shadow-md block items-center col-start-4 col-end-7 row-start-1 row-end-3 relative">
       <CardHeader className="flex flex-row justify-between p-0 pb-6">
         <div>
           <CardTitle className="text-xl font-bold">Listing Request</CardTitle>

@@ -11,7 +11,7 @@ import {
 
 function MostVisited() {
   return (
-    <Card className=" px-10 py-5 rounded-md shadow-md h-full block items-center lg:col-start-1 lg:col-end-4 lg:row-start-5 lg:row-end-6 md:col-start-1 md:col-end-3 relative">
+    <Card className=" px-10 py-5 rounded-md shadow-md h-full block items-center col-start-1 col-end-4 row-start-5 row-end-6 relative">
       <CardContent className='py-5 px-0'>
       <span className="text-lg font-bold text-zinc-900 dark:text-white">
         Most Visited Properties

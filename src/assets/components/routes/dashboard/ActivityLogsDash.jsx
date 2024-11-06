@@ -82,7 +82,7 @@ function ActivityLog() {
   }
 
   return (
-    <Card className="p-4 shadow-md col-start-1 lg:col-end-7 md:col-end-3">
+    <Card className="p-4 shadow-md col-start-1 col-end-7">
       <CardContent className="p-3">
         <h2 className="text-lg font-bold mb-2">Activity Logs</h2>
         <div className="overflow-auto rounded-md py-3">

@@ -129,7 +129,7 @@ function PendingRequestdash() {
   };
 
   return (
-    <Card className="p-2 shadow-md block items-center lg:col-start-1 lg:col-end-4 lg:row-start-2 lg:row-end-5 md:col-start-1 md:col-end-3 relative">
+    <Card className="p-2 shadow-md block items-center col-start-1 col-end-4 row-start-2 row-end-5 relative">
       <CardContent className="p-5">
         <div className="flex justify-between mb-4">
           <span className="text-lg font-bold">Pending Listing Requests</span>

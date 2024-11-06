@@ -62,7 +62,7 @@ function ActiveUser() {
   }
 
   return (
-    <Card className="px-10 py-5 rounded-md shadow-md block items-center col-start-1 md:col-end-3 lg:col-end-4 tracking-tighter noselect">
+    <Card className="px-10 py-5 rounded-md shadow-md block items-center col-start-1 col-end-4 tracking-tighter noselect">
       <CardContent className="p-5">
         <div className="text-2xl font-bold text-zinc-900 dark:text-white">
           {totalUser}

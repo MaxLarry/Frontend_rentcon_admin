@@ -40,7 +40,7 @@ const ProfileDropdown = () => {
               </AvatarFallback>
             )}
           </Avatar>
-          <span className="flex-1 tracking-s font-medium text-sm">
+          <span className="flex-1 tracking-s font-medium text-sm hidden md:inline">
             {user?.name || ""}
             {/* This ensures the frontend loads without errors */}
           </span>
