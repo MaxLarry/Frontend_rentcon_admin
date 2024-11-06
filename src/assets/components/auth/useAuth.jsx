@@ -10,7 +10,7 @@ const useAuth = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await axios.get('/auth/checkAuth');
+        const response = await axios.get('/auth/checkAuth', { withCredentials: true });
         setIsAuthenticated(response.data.isAuthenticated);
         //console.log(response.data.isAuthenticated);
         if (response.data.isAuthenticated) {
