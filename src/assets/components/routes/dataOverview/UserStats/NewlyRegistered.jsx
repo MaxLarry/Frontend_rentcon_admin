@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import axios from "axios";
-import DropdownFilter from "../DropdownFilter.jsx";
+import DropdownFilter from "../Dropdownfilter";
 import {
   CartesianGrid,
   Line,
