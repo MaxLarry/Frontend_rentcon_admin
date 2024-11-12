@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Loading from './assets/components/ui/Loading';
 import Login from './assets/components/ui/Login';
 import Dashboard from './assets/components/routes/dashboard/Dashboard';
 import ListingManagement from './assets/components/routes/listmanagement/listingManagement';
@@ -46,6 +47,8 @@ function App() {
   const ProtectedSettings = withAuth(Settings);
 
   return (
+    <>
+    <Loading/>
     <Router>
       <Routes>
         {/* Public route without Header and Sidebar */}
@@ -65,6 +68,7 @@ function App() {
         
       </Routes>
     </Router>
+    </>
   );
 }
 
