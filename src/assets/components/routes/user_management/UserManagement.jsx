@@ -8,6 +8,7 @@ import ListAllUSerVerification from "./UserRequest/ListAllUSerVerification";
 import ListAllUnverified from "./Unverified/ListAllUnverified";
 import { CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import LoadingUser from "../../ui/loadings/LoadingUser";
 
 function UserManagement() {
   const navigate = useNavigate();
@@ -16,9 +17,13 @@ function UserManagement() {
   // Get tab name from URL
   const queryParams = new URLSearchParams(location.search);
   const initialTab = queryParams.get("tab") || "Landlords";
-
   const [activeTab, setActiveTab] = useState(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => setIsLoading(false), 3000); // 3-second delay
+  }, []);
 
   // Update the URL when activeTab changes
   useEffect(() => {
@@ -46,28 +51,34 @@ function UserManagement() {
   };
 
   return (
-    <ScrollArea
-      className="pt-14 lg:ml-60 h-full block gap-2 flex-col lg:flex-row translate-all
+    <>
+      {isLoading ? (
+        <LoadingUser />
+      ) : (
+        <ScrollArea
+          className="pt-14 lg:ml-60 h-full block gap-2 flex-col lg:flex-row translate-all
     duration-300"
-    >
-      <div className="px-4" style={{ minWidth: "1200px" }}>
-        <div className="justify-between items-center px-5 p-9">
-          <h1 className="font-bold text-2xl">User Management</h1>
-          <p className="font-thin text-sm">
-            Manage admins, landlord and occupant accounts, including roles and
-            permissions.
-          </p>
-        </div>
+        >
+          <div className="px-4" style={{ minWidth: "1200px" }}>
+            <div className="justify-between items-center px-5 p-9">
+              <h1 className="font-bold text-2xl">User Management</h1>
+              <p className="font-thin text-sm">
+                Manage admins, landlord and occupant accounts, including roles
+                and permissions.
+              </p>
+            </div>
 
-        <div className="grid gap-4 p-4 grid-cols-6 max-w-full mx-auto">
-          <UserTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="grid gap-4 p-4 grid-cols-6 max-w-full mx-auto">
+              <UserTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-          <div className="col-start-2 col-end-7 row-start-1 row-end-3">
-            <CardContent>{renderContent()}</CardContent>
+              <div className="col-start-2 col-end-7 row-start-1 row-end-3">
+                <CardContent>{renderContent()}</CardContent>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </ScrollArea>
+        </ScrollArea>
+      )}
+    </>
   );
 }
 
