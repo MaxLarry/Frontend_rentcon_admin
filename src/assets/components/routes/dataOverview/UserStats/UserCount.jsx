@@ -85,6 +85,11 @@ function UserCount() {
       color: "hsl(var(--chart-3))",
     },
   };
+  
+  if(percentageChange > 100){
+    setPercentageChange(100)
+  }
+  
   const isUp = percentageChange > 0;
   const changeText = isUp
     ? `Number of users up by ${Math.abs(percentageChange).toFixed(1)}% this month`

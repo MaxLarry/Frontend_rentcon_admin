@@ -113,6 +113,9 @@ function NewlyRegistered() {
     return <div>{error}</div>;
   }
 
+  if(percentageChange > 100){
+    setPercentageChange(100)
+  }
   const isUp = percentageChange > 0;
   const changeText =
     percentageChange === 0

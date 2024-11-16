@@ -26,17 +26,8 @@ body {
   height: 100%;
 }
 
-.lg-card {
-  background-color: #ffffffa8;
-}
-.lg-background {
-  background-image: url("assets/img/texture-dark.jpg");
-  background-size: cover;
-  background-position: center;
-}
-
 .log-img {
-  background-image: url("assets/img/rent.png");
+  background-image: url("assets/img/rentconnectblender.png");
   background-size: cover;
   background-position: center;
 }

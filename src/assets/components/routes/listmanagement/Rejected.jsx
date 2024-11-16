@@ -3,7 +3,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import CopyableText from "../../ui/CopyableText";
-import { Checkbox } from "@/components/ui/checkbox"; // Import Shadcn checkbox
+import { Checkbox } from "@/components/ui/checkbox";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
 import {

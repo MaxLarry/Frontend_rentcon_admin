@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import axios from "axios";
-import RentLogo from "../../img/rentconff1_white.svg";
+import RentLogo from "../../img/rentconv2-fwhite.svg";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { ClipLoader } from "react-spinners";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -29,7 +33,7 @@ const Login = () => {
       console.error("Login error:", error);
       setError("Invalid email or password");
       toast({
-        description: "Invalid email or password", 
+        description: "Invalid email or password",
         variant: "destructive",
       });
     } finally {
@@ -48,7 +52,7 @@ const Login = () => {
           />
         </div>
       </div>
-      <div className="flex-1 flex-col flex p-5 items-center justify-center bg-zinc-900">
+      <div className="flex-1 flex-col flex p-5 items-center justify-center bg-neutral-950">
         <div className="w-full max-w-md space-y-6">
           <div className="mb-9">
             <div className="px-16">
@@ -64,18 +68,15 @@ const Login = () => {
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium">
-                Email address<span className="text-rose-600">*</span>
+                Email address<span className="text-rose-600"> *</span>
               </label>
               <div className="mt-1">
-                <input
+                <Input
                   id="email"
-                  name="email"
                   type="email"
-                  required
-                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full rounded-md bg-zinc-800 border-zinc-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className="rounded-xl bg-black border-gray-600"
                 />
               </div>
             </div>
@@ -83,11 +84,11 @@ const Login = () => {
             <div>
               <div className="flex items-center justify-between">
                 <label htmlFor="password" className="block text-sm font-medium">
-                  Password<span className="text-rose-600">*</span>
+                  Password<span className="text-rose-600"> *</span>
                 </label>
               </div>
               <div className="relative mt-1">
-                <input
+                <Input
                   id="password"
                   name="password"
                   type={showPassword ? "text" : "password"}
@@ -96,7 +97,7 @@ const Login = () => {
                   placeholder="•••••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full rounded-md bg-zinc-800 border-zinc-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                  className="rounded-xl bg-zinc-950"
                 />
                 <button
                   type="button"
@@ -104,9 +105,9 @@ const Login = () => {
                   className="absolute inset-y-0 right-0 flex items-center pr-3"
                 >
                   {showPassword ? (
-                    <FaEye className="h-5 w-5 text-zinc-400" />
+                    <FaEye className="h-5 w-5 text-zinc-700" />
                   ) : (
-                    <FaEyeSlash className="h-5 w-5 text-zinc-400" />
+                    <FaEyeSlash className="h-5 w-5 text-zinc-700" />
                   )}
                 </button>
               </div>
@@ -114,11 +115,7 @@ const Login = () => {
 
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="remember"
-                  className="h-4 w-4 border-gray-300 rounded"
-                />
+              <Checkbox id="remember" className="h-4 w-4 border-teal-500" />
                 <label htmlFor="remember" className="ml-2 text-sm">
                   Remember me
                 </label>
@@ -129,17 +126,25 @@ const Login = () => {
             </div>
 
             <div>
-              <button
+              <Button
+                variant="default"
                 type="submit"
-                disabled={loading} // Disable when loading
-                className={`flex w-full justify-center rounded-md px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 ${
-                  loading 
-                    ? "bg-gray-600 text-gray-400 cursor-not-allowed" 
-                    : "bg-indigo-600 text-white hover:bg-indigo-500 focus:ring-indigo-500"
+                disabled={loading}
+                className={`w-full justify-center rounded-xl px-4 py-2 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 ${
+                  loading
+                    ? "bg-gray-600 text-gray-400 cursor-none"
+                    : "bg-teal-500 hover:bg-teal-600 text-white focus:ring-teal-500 shadow-lg hover:shadow-teal-400 transition-all duration-300"
                 }`}
               >
-                {loading ? "Logging in..." : "Log in"}
-              </button>
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <ClipLoader color="#fff" size={20} />
+                    Logging in
+                  </span>
+                ) : (
+                  "Log in"
+                )}
+              </Button>
             </div>
           </form>
         </div>
