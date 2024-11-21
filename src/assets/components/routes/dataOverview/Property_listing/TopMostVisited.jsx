@@ -76,7 +76,7 @@ function TopMostVisited() {
                     <strong>No. of Rooms:</strong> {property.roomCount}
                   </p>
                   <p className="text-xs">
-                    <strong>Visited:</strong> {property.visited} times
+                    <strong>Views:</strong> {property.visited} times
                   </p>
                   <p className="text-xs">
                     <strong>Listed Date:</strong>{" "}

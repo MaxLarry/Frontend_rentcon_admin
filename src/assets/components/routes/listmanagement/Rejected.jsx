@@ -31,7 +31,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-function Rejected({ searchQuery }) {
+function Rejected({ searchQuery, selectedBarangay }) {
   const { toast } = useToast();
   const req_column = [
     "ID",
@@ -64,10 +64,15 @@ function Rejected({ searchQuery }) {
           ).toLowerCase()
         : "";
 
-      return (
-        requestId.includes(lowerCaseQuery) ||
+        const barangayMatches =         
+        selectedBarangay.length === 0 ||
+        selectedBarangay.includes(property.barangay);
+        
+      return (      
+        barangayMatches &&
+        (requestId.includes(lowerCaseQuery) ||
         fullName.includes(lowerCaseQuery) ||
-        createdAt.includes(lowerCaseQuery)
+        createdAt.includes(lowerCaseQuery))
       );
     })
     .sort((a, b) => {

@@ -7,9 +7,11 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { SearchInput } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import LoadingListing from "@/assets/components/ui/loadings/LoadingListing";
+import {DropdownBarangayFilter} from "./DropdownBarangayFilter";
 
 function ListingManagement() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedBarangay, setSelectedBarangay] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -30,18 +32,32 @@ function ListingManagement() {
     }
   }, [activeTab, queryParams, navigate]);
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "Pending":
-        return <Pending searchQuery={searchQuery} />;
-      case "Approved":
-        return <Approved searchQuery={searchQuery} />;
-      case "Rejected":
-        return <Rejected searchQuery={searchQuery} />;
-      default:
-        return null;
-    }
-  };
+    const handleBarangayChange = (barangay) => {
+      setSelectedBarangay((prevSelected) =>
+        prevSelected.includes(barangay)
+          ? prevSelected.filter((r) => r !== barangay)
+          : [...prevSelected, barangay]
+      );
+    };
+
+const renderContent = () => {
+  switch (activeTab) {
+    case "Pending":
+      return (
+        <Pending searchQuery={searchQuery} selectedBarangay={selectedBarangay} />
+      );
+    case "Approved":
+      return (
+        <Approved searchQuery={searchQuery} selectedBarangay={selectedBarangay} />
+      );
+    case "Rejected":
+      return (
+        <Rejected searchQuery={searchQuery} selectedBarangay={selectedBarangay} />
+      );
+    default:
+      return null;
+  }
+};
 
   return (
     <>
@@ -58,13 +74,17 @@ function ListingManagement() {
                   organize property listings for better visibility.
                 </p>
               </div>
-              <div className="relative w-96">
+              <div className="flex gap-3 relative w-96">
                 <SearchInput
                   type="text"
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="p-2 pl-10 w-full"
+                />
+                <DropdownBarangayFilter
+                  selectedBarangay={selectedBarangay}
+                  onBarangayChange={handleBarangayChange}
                 />
               </div>
             </div>

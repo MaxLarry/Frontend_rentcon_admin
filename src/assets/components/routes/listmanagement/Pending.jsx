@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-function Pending({ searchQuery }) {
+function Pending({ searchQuery, selectedBarangay }) {
   const [pendingRequests, setPendingRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -199,12 +199,16 @@ function Pending({ searchQuery }) {
       const createdAt = request.created_at
         ? format(new Date(request.created_at), "yyyy-MM-dd HH:mm").toLowerCase()
         : "";
-
+        const barangayMatches =         
+        selectedBarangay.length === 0 ||
+        selectedBarangay.includes(request.barangay);
+        
       return (
-        requestId.includes(lowerCaseQuery) ||
+        barangayMatches &&
+        (requestId.includes(lowerCaseQuery) ||
         fullName.includes(lowerCaseQuery) ||
         status.includes(lowerCaseQuery) ||
-        createdAt.includes(lowerCaseQuery)
+        createdAt.includes(lowerCaseQuery))
       );
     })
     .sort((a, b) => {

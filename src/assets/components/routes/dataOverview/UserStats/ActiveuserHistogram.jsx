@@ -28,42 +28,42 @@ import {
 export const description = "A bar chart with a label";
 
 const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
-  { month: "February", desktop: 305 },
-  { month: "March", desktop: 237 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 209 },
-  { month: "June", desktop: 214 },
+  { month: "January", count: 186 },
+  { month: "February", count: 305 },
+  { month: "March", count: 237 },
+  { month: "April", count: 73 },
+  { month: "May", count: 209 },
+  { month: "June", count: 214 },
+  { month: "February", count: 305 },
+  { month: "March", count: 237 },
+  { month: "April", count: 73 },
+  { month: "May", count: 209 },
+  { month: "June", count: 214 },
+  { month: "February", count: 305 },
+  { month: "March", count: 237 },
+  { month: "April", count: 73 },
+  { month: "May", count: 209 },
+  { month: "June", count: 214 },
+  { month: "February", count: 305 },
+  { month: "March", count: 237 },
+  { month: "April", count: 73 },
+  { month: "May", count: 209 },
+  { month: "June", count: 214 },
+  { month: "February", count: 305 },
+  { month: "March", count: 237 },
+  { month: "April", count: 73 },
+  { month: "May", count: 209 },
+  { month: "June", count: 214 },
+  { month: "February", count: 305 },
+  { month: "March", count: 237 },
+  { month: "April", count: 73 },
+  { month: "May", count: 209 },
+  { month: "June", count: 214 },
 ];
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  count: {
+    label: "Count",
     color: "hsl(var(--chart-1))",
   },
 };
@@ -106,7 +106,7 @@ function ActiveuserHistogram() {
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <Tooltip content={<ChartTooltipContent indicator="bar" />} cursor={false} />
-            <Bar dataKey="desktop" fill="var(--color-desktop)">
+            <Bar dataKey="count" fill="var(--color-count)">
               <LabelList position="top" offset={12} className="fill-foreground" fontSize={12} />
             </Bar>
           </BarChart>

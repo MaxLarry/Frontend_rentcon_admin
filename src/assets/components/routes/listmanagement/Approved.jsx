@@ -33,7 +33,7 @@ import {
 import CopyableText from "../../ui/CopyableText";
 import ViewPropertyModal from "./modals/ViewPropertyModal"; // Import the modal
 
-function Approved({ searchQuery }) {
+function Approved({ searchQuery, selectedBarangay }) {
   const [approvedProperty, setApprovedProperty] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -157,12 +157,16 @@ function Approved({ searchQuery }) {
             "yyyy-MM-dd HH:mm"
           ).toLowerCase()
         : "";
-
+        const barangayMatches =         
+        selectedBarangay.length === 0 ||
+        selectedBarangay.includes(property.barangay);
+        
       return (
-        requestId.includes(lowerCaseQuery) ||
-        fullName.includes(lowerCaseQuery) ||
-        address.includes(lowerCaseQuery) ||
-        createdAt.includes(lowerCaseQuery)
+        barangayMatches &&
+        (requestId.includes(lowerCaseQuery) ||
+          fullName.includes(lowerCaseQuery) ||
+          address.includes(lowerCaseQuery) ||
+          createdAt.includes(lowerCaseQuery))
       );
     })
     .sort((a, b) => {
