@@ -15,7 +15,7 @@ import Inbox from './assets/components/routes/Inbox/Inbox';
 import axios from 'axios';
 
 //axios.defaults.baseURL = 'http://localhost:5000';
-axios.defaults.baseURL = 'https://backend-rentcon-admin.vercel.app';
+axios.defaults.baseURL = 'https://backend-rentcon-admin.onrender.com';
 axios.defaults.withCredentials = true;
 
 function App() {

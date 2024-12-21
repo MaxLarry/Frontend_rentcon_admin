@@ -65,7 +65,7 @@ function ActiveUser() {
           {totalUser}
         </div>
         <span className="text-xl font-medium text-gray-500 dark:text-gray-200">
-          Active Users
+          Total Users
         </span>
         <div className="flex justify-between mt-4">
           <div className="block">

@@ -196,10 +196,10 @@ function ReviewModal({
                               <strong>Capacity:</strong> {room.capacity}
                             </p>
                             <p className="text-sm">
-                              <strong>Deposit:</strong> {room.deposit} Month
+                              <strong>Deposit:</strong> {room.deposit}
                             </p>
                             <p className="text-sm">
-                              <strong>Advance:</strong> {room.advance} Month
+                              <strong>Advance:</strong> {room.advance}
                             </p>
                             <p className="text-sm">
                               <strong>Price:</strong> ₱{room.price}

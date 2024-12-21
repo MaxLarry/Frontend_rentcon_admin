@@ -155,7 +155,7 @@ function PropertyListedCount() {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          All users
+                          Total
                         </tspan>
                       </text>
                     );
